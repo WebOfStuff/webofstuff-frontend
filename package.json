@@ -1,13 +1,28 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node server.js",
     "build": "next build",
-    "start": "next start"
+    "start": "NODE_ENV=production node server.js",
+    "lint": "next lint"
   },
   "dependencies": {
-    "next": "latest",
+    "@prisma/client": "^3.5.0",
+    "express": "^4.17.1",
+    "next": "^12.0.4",
     "react": "17.0.2",
     "react-dom": "17.0.2"
-  }
+  },
+  "name": "webofstuff-frontend",
+  "description": "WebofStuff Frontend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {
+    "@types/react": "^17.0.35",
+    "prisma": "^3.5.0",
+    "video.js": "^7.17.0",
+    "videojs-youtube": "^2.6.1"
+  },
+  "author": "",
+  "license": "ISC"
 }

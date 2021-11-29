@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model category {
+  cat_id        Int             @id @default(autoincrement())
+  cat_name      String?         @db.VarChar(40)
+  labelcategory labelcategory[]
+}
+
+model content {
+  c_id           Int              @id @default(autoincrement())
+  c_name         String?          @db.VarChar(50)
+  contentsources contentsources[]
+}
+
+model label {
+  l_id          Int             @id @default(autoincrement())
+  l_name        String?         @db.VarChar(50)
+  labelcategory labelcategory[]
+}
+
+model labelcategory {
+  lc_id    Int       @id @default(autoincrement())
+  l_id     Int?
+  cat_id   Int?
+  category category? @relation(fields: [cat_id], references: [cat_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_cat_id")
+  label    label?    @relation(fields: [l_id], references: [l_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_l_id")
+
+  @@index([cat_id], map: "fk_cat_id")
+  @@index([l_id], map: "fk_l_id")
+}
+
+model sources {
+  s_id           Int              @id @default(autoincrement())
+  s_name         String?          @db.VarChar(20)
+  contentsources contentsources[]
+}
+
+model contentsources {
+  cs_id   Int      @id @default(autoincrement())
+  cs_url  String?  @db.VarChar(100)
+  c_id    Int?
+  s_id    Int?
+  content content? @relation(fields: [c_id], references: [c_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_c_id")
+  sources sources? @relation(fields: [s_id], references: [s_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_s_id")
+
+  @@index([c_id], map: "fk_c_id")
+  @@index([s_id], map: "fk_s_id")
+}
