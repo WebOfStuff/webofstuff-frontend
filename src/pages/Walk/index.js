@@ -1,15 +1,12 @@
-import { prisma } from '../../lib/prisma';
-import Player from '../../components/Video/Player'
-import { useRouter } from 'next/router';
 
-export default function Walk(props){
-  return(  
-    <div className="mt-10 flex flex-col items-center pb-24">
-          <h1>Walk this way! {props.message}</h1>
-          <Player {...props.videoJsOptions} />
-      </div>
-    )
-  }
+import React from 'react';
+import VideoArea from '../../components/Video/index';
+
+const Walk = () => (
+    <VideoArea enableThemeQueryParam hideDescription />
+);
+
+export default Walk;
 
   export async function getServerSideProps() {
     const content = await prisma.contentsources.findFirst({
