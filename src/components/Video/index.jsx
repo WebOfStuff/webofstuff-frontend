@@ -36,11 +36,6 @@ class VideoArea extends React.Component {
       const pl = this.player.playlist();
       const plItem = pl[this.player.playlist.currentItem()];
       this.setQueryParam(plItem.id);
-      this.player.mux.emit('videochange', {
-        video_id: plItem.id,
-        video_title: plItem.name,
-        video_duration: plItem.duration,
-      });
     });
 
     const videoParam = queryString.parse(window.location.search).video;
