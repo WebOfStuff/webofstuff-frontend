@@ -34,3 +34,5 @@ yarn-error.log*
 /videojs-playlist-ui-webofstuff
 /videojs-youtubeAgreement
 .vscode/tasks.json
+videojs-playlist-ui-*.tgz
+videojs-playlist-ui.vertical.css
