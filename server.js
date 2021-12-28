@@ -1,4 +1,3 @@
-const express = require('express')
 const next = require('next')
 const port =  8080
 const dev = process.env.NODE_ENV !== 'production'
@@ -13,8 +12,9 @@ function redirectTrailingSlash(req, res, next) {
         res.redirect(301, path.slice(0, -1) + ((query)?('?'+query):'')); // Redirect User with 301 and without the slash
     else
         next();
-}app.prepare().then(() => {
-    express()
+}
+app.prepare().then(() => {
+    app
     .use(redirectTrailingSlash) // redirect handler (should be before nextjs handler)
     .use(handler) // Regular next.js handler
     .listen(port, err => {

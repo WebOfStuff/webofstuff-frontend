@@ -1,13 +1,19 @@
 {
   "private": true,
   "scripts": {
-    "dev": "node server.js",
+    "dev": "set NODE_OPTIONS='--inspect' && next dev",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
   },
   "dependencies": {
-    "express": "^4.17.1",
+    "@apollo/client": "~3.4.0",
+    "@neo4j/graphql": "^2.5.3",
+    "@nivo/core": "^0.75.0",
+    "apollo-server-micro": "^3.5.0",
+    "graphql": "^15.8.0",
+    "micro": "^9.3.4",
+    "neo4j-driver": "^4.4.1",
     "next": "^12.0.7",
     "next-auth": "^4.0.1",
     "nodemailer": "^6.7.2",
@@ -16,21 +22,21 @@
     "react-dom": "17.0.2",
     "video.js": "^7.17.0",
     "videojs-playlist": "^4.3.1",
-    "videojs-playlist-ui": "file:./videojs-playlist-ui-webofstuff",
-    "videojs-youtube": "^2.6.1",
-    "videojs-youtubeAgreement": "file:./videojs-youtubeAgreement"
+    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.8.1.tgz",
+    "videojs-youtube": "^2.6.1"
   },
   "name": "webofstuff-frontend",
   "description": "WebofStuff Frontend",
   "version": "1.0.0",
   "main": "server.js",
   "devDependencies": {
-    "@prisma/client": "^3.5.0",
+    "@prisma/client": "^3.6.0",
     "@types/react": "^17.0.35",
     "eslint": "^7.32.0",
     "eslint-config-next": "12.0.4",
     "jquery": "^3.6.0",
-    "prisma": "^3.5.0",
+    "micro-dev": "^3.0.0",
+    "prisma": "^3.6.0",
     "query-string": "^7.0.1"
   },
   "author": "",
