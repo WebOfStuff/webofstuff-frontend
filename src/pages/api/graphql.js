@@ -1,4 +1,4 @@
-import { ApolloServer} from "apollo-server";
+import { ApolloServer} from "apollo-server-micro";
 import { Neo4jGraphQL, Neo4jGraphQLConfig } from "@neo4j/graphql";
 import { gql } from "@apollo/client"
 import neo4j from "neo4j-driver";
@@ -25,7 +25,7 @@ const driver = neo4j.driver(
 );
 
 
-const neoSchema = new Neo4jGraphQL({ typeDefs, driver, config: {driverConfig: {database: "webofstuff"}}});
+const neoSchema = new Neo4jGraphQL({ typeDefs, driver});
 
 const apolloServer = new ApolloServer({ schema: neoSchema.schema });
 

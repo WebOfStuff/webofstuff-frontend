@@ -5,8 +5,8 @@ import { useLazyQuery, gql } from "@apollo/client";
 
 const QUERY = gql`
   query {  
-    elements {
-      name
+    contents {
+      title
     }
   }
 `;

@@ -2,7 +2,7 @@ import React from 'react';
 import videojs from 'video.js';
 import queryString from 'query-string';
 import PlayerPlaylist from './PlayerPlaylist';
-import playlist from './playlist';
+//import playlistexample from './playlist';
 import 'videojs-youtube';
 import 'videojs-playlist';
 import 'videojs-playlist-ui';
@@ -24,10 +24,26 @@ class VideoArea extends React.Component {
       `${window.location.pathname}?${params.toString()}`
     );
   }
+  
+
+  findCurrentPlaylist() {
+    if (loggedIn) {
+      let playlist = loadPlaylist(username)
+    } else if (cookied){
+      let playlist = loadPlaylist(cookie)
+    } else {
+      let playlist = loadPlaylist([]) 
+      this.createPlaylistCookie();
+      //let playlist = loadPlaylist(playlistexample)
+    }
+    return playlist;
+  }
+
 
   componentDidMount() {
-    
+    let playlist = this.findCurrentPlaylist();
     this.player = videojs(this.videoEl, {}, () => {
+    
         this.player.playlist(playlist, currentVideo);
         this.player.playlistUi();
     });
