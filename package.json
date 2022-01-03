@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_OPTIONS='--inspect=localhost:4444' next dev",
+    "dev": "cross-env NODE_OPTIONS='--inspect=localhost:4444' node server-dev.js",
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint"
@@ -9,6 +9,7 @@
   "dependencies": {
     "@apollo/client": "~3.4.0",
     "@neo4j/graphql": "^2.5.3",
+    "@next-auth/neo4j-adapter": "^1.0.2",
     "@nivo/core": "^0.75.0",
     "@prisma/client": "^3.6.0",
     "apollo-server-micro": "^3.5.0",
@@ -24,7 +25,7 @@
     "react-dom": "^17.0.2",
     "video.js": "^7.17.0",
     "videojs-playlist": "^4.3.1",
-    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.8.1.tgz",
+    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.8.2.tgz",
     "videojs-youtube": "^2.6.1"
   },
   "name": "webofstuff-frontend",
@@ -36,10 +37,13 @@
     "@types/next": "^9.0.0",
     "@types/node": "^14.14.5",
     "@types/react": "^17.0.35",
+    "autoprefixer": "^10.4.1",
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-next": "12.0.4",
-    "query-string": "^7.0.1"
+    "postcss": "^8.4.5",
+    "query-string": "^7.0.1",
+    "tailwindcss": "^3.0.8"
   },
   "author": "",
   "license": "ISC"

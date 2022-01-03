@@ -36,3 +36,10 @@ yarn-error.log*
 .vscode/tasks.json
 videojs-playlist-ui-*.tgz
 videojs-playlist-ui.vertical.css
+domains.ext
+localhost.crt
+localhost.csr
+localhost.key
+RootCA.crt
+RootCA.key
+RootCA.pem

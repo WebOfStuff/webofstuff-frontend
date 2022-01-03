@@ -1,7 +1,8 @@
 
 import React from 'react';
-import VideoArea from '../../components/Video/index';
+import VideoArea from '../components/Video/VideoArea';
 import { useLazyQuery, gql } from "@apollo/client";
+import { useSession } from "next-auth/react"
 
 const QUERY = gql`
   query {  
@@ -13,15 +14,8 @@ const QUERY = gql`
 
 
 export default function Walk() {
-  const [
-    getData,
-    { loading, data }
-  ] = useLazyQuery(QUERY);
-
-  if (loading) return <p>Loading ...</p>;
-  if (data && data.countries) {
-    console.log(data.countries);
-  }
+  const [getData,{ loading, data }] = useLazyQuery(QUERY);
+  const { data: session, status } = useSession();
 
   if (typeof window !== 'undefined') {
     document.addEventListener('click', function (e) {
@@ -33,6 +27,6 @@ export default function Walk() {
   }
 
   return (
-    <VideoArea enableThemeQueryParam hideDescription />
+    <VideoArea enableThemeQueryParam hideDescription session={session} status ={status} />
   )
 };

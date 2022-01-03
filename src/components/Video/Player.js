@@ -15,11 +15,9 @@ const Player = (props) => {
     }, [props, videoEl]);
 
     return (
-        <>
                 <div className="data-vjs-player">
                     <video ref={onVideo} className="video-js" playsInline />
                 </div>
-        </>
     )
 }
 

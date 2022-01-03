@@ -1,5 +1,5 @@
 import { ApolloServer} from "apollo-server-micro";
-import { Neo4jGraphQL, Neo4jGraphQLConfig } from "@neo4j/graphql";
+import { Neo4jGraphQL } from "@neo4j/graphql";
 import { gql } from "@apollo/client"
 import neo4j from "neo4j-driver";
 

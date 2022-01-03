@@ -2,11 +2,22 @@ import React from 'react';
 import videojs from 'video.js';
 import queryString from 'query-string';
 import PlayerPlaylist from './PlayerPlaylist';
-//import playlistexample from './playlist';
+import playlistexample from './playlist';
 import 'videojs-youtube';
 import 'videojs-playlist';
 import 'videojs-playlist-ui';
 
+
+function getPlaylistCookie(){
+  var jsId = document.cookie.match(/Playlist=[^;]+/);
+  if(jsId != null) {
+      if (jsId instanceof Array)
+          jsId = jsId[0].substring(9);
+      else
+          jsId = jsId.substring(9);
+  }
+  return jsId;
+}
 
 class VideoArea extends React.Component {
   constructor(...args) {
@@ -24,23 +35,41 @@ class VideoArea extends React.Component {
       `${window.location.pathname}?${params.toString()}`
     );
   }
-  
 
   findCurrentPlaylist() {
-    if (loggedIn) {
-      let playlist = loadPlaylist(username)
-    } else if (cookied){
-      let playlist = loadPlaylist(cookie)
+    let sessionStatus = this.props.status;
+    let cookied;
+    let playlist;
+    let playlistCookie = getPlaylistCookie()
+    if (playlistCookie ==null){
+      cookied = false; 
     } else {
-      let playlist = loadPlaylist([]) 
+      cookied = true;
+    }
+    if (sessionStatus === "authenticated") {
+      playlist = this.loadPlaylist(this.props.session.userName)
+    } else if (cookied){
+     // playlist = this.loadPlaylist(playlistCookie)
+      playlist = playlistexample;
+    } else {
+      //playlist = [];
       this.createPlaylistCookie();
-      //let playlist = loadPlaylist(playlistexample)
+      playlist = playlistexample;
     }
     return playlist;
   }
 
+  loadPlaylist(playlistName) {
+    return [];
+  }
+
+  createPlaylistCookie() {
+      const sessionid = self.crypto.randomUUID();
+      document.cookie = "Playlist=" + sessionid+";path=/";
+  };
 
   componentDidMount() {
+    
     let playlist = this.findCurrentPlaylist();
     this.player = videojs(this.videoEl, {}, () => {
     
