@@ -1,3 +1,4 @@
+const express = require('express')
 const next = require('next')
 const port =  8080
 const dev = process.env.NODE_ENV !== 'production'
@@ -14,7 +15,7 @@ function redirectTrailingSlash(req, res, next) {
         next();
 }
 app.prepare().then(() => {
-    app
+    express()
     .use(redirectTrailingSlash) // redirect handler (should be before nextjs handler)
     .use(handler) // Regular next.js handler
     .listen(port, err => {

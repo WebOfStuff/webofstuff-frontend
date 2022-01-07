@@ -1,20 +1,24 @@
-import { ApolloServer} from "apollo-server-micro";
+import { ApolloServer, gql} from "apollo-server-micro";
 import { Neo4jGraphQL } from "@neo4j/graphql";
-import { gql } from "@apollo/client"
 import neo4j from "neo4j-driver";
+import Cors from 'micro-cors'
 
+const cors = Cors({ allowMethods: ['PUT', 'POST'] })
 
 const typeDefs = gql`
     type Content {
         title: String
-        playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistElements")
+        youtubeid: String
+        playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistElements")
     }
+
     type Playlist {
         name: String
-        elements: [Content] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistElements")
+        elements: [Content] @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistElements")
     }
+    
     interface PlaylistElements @relationshipProperties {
-        position: [Int]
+        position: Int
     }
 `;
 
@@ -27,17 +31,20 @@ const driver = neo4j.driver(
 
 const neoSchema = new Neo4jGraphQL({ typeDefs, driver});
 
-const apolloServer = new ApolloServer({ schema: neoSchema.schema });
+const apolloServer = new ApolloServer({ schema: neoSchema.schema, introspection: true  });
 
 const startServer = apolloServer.start();
 
-export default async function handler(req, res) {
-
+export default cors(async function handler(req, res) {
+  if (req.method === 'OPTIONS') {
+    res.end()
+    return false
+  }
     await startServer;
     await apolloServer.createHandler({
       path: "/api/graphql",
     })(req, res);
-  }
+  })
 
 export const config = {
   api: {
