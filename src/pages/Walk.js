@@ -51,7 +51,7 @@ export default function Walk() {
     }
     )
   }
-  return (<VideoArea enableThemeQueryParam hideDescription playlist={playlist} />)
+  return (<VideoArea playlist={playlist} />)
 };
 
 function useDebounce(value, delay) {

@@ -1,77 +1,46 @@
 import React from 'react';
 import videojs from 'video.js';
-import queryString from 'query-string';
 import PlayerPlaylist from './PlayerPlaylist';
 import 'videojs-youtube';
 import 'videojs-playlist';
 import 'videojs-playlist-ui';
+import { useEffect } from 'react';
 
-class VideoArea extends React.Component {
-  constructor(...args) {
-    super(...args);
-    this.state = { isPlayerInitialized: false };
-  }
+export default function VideoArea2(props) {
+  const [videoEl, setVideoEl] = useState(null)
+  const onVideo = useCallback((el) => {
+    setVideoEl(el)
+  }, [])
 
-  setQueryParam(plItemId) {
-    if (!this.props.enableThemeQueryParam) return;
-    const params = new URLSearchParams(window.location.search);
-    params.set('video', plItemId);
-    window.history.replaceState(
-      {},
-      '',
-      `${window.location.pathname}?${params.toString()}`
-    );
-  }
-
-  componentDidMount() {
-    const playlist = this.props.playlist;
-        this.player = videojs(this.videoEl, {}, () => {
-        this.player.playlist(playlist, currentVideo);
-        this.player.playlistUi();
-    });
-   
-    this.player.on('loadstart', () => {
-      const pl = this.player.playlist();
-      const plItem = pl[this.player.playlist.currentItem()];
-      this.setQueryParam(plItem.id);
+  useEffect(() => {
+    const playlist = props.playlist;
+    const player = videojs(videoEl, props)
+    player.on('loadstart', () => {
+      player.playlist(playlist, currentVideo);
+      player.playlistUi();
     });
 
-    const videoParam = queryString.parse(window.location.search).video;
-    let currentVideo;
-    if (this.props.enableThemeQueryParam) {
-      const index = playlist.findIndex(plItem => plItem.id === videoParam);
-      if (index !== -1) currentVideo = index;
+    return () => {
+      if (this.player) {
+        this.player.dispose();
+      }
     }
+  }, [props, videoEl]);
 
-    this.setState({ isPlayerInitialized: true });
-  }
-
-  componentWillUnmount() {
-    if (this.player) {
-      this.player.dispose();
-    }
-  }
-
-  render() {
-    return (
-          <div id="PlayerContainer" className="flex">
-              <div id="VideoWrapper" className="flex-1 w-5/6" >
-                <video
-                  ref={el => {
-                    this.videoEl = el;
-                  }}
-                  controls
-                  id="preview-player"
-                  preload="auto"
-                  crossOrigin="anonymous"
-                  className="video-js vjs-fluid vjs-big-play-centered"
-                  playsInline
-                />
-              </div>
-              <PlayerPlaylist />
-          </div>
-    );
-  }
+  return (
+    <div id="PlayerContainer" className="flex">
+      <div id="VideoWrapper" className="flex-1 w-5/6" >
+        <video
+          ref={onVideo}
+          controls
+          id="preview-player"
+          preload="auto"
+          crossOrigin="anonymous"
+          className="video-js vjs-fluid vjs-big-play-centered"
+          playsInline
+        />
+      </div>
+      <PlayerPlaylist />
+    </div>
+  );
 }
-
-export default VideoArea;

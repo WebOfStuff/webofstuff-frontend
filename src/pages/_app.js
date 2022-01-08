@@ -15,7 +15,6 @@ const createApolloClient = () => {
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps }}) {
   return (
-
     <SessionProvider session={session}>
         <ApolloProvider client={createApolloClient()}>
           <Layout>
