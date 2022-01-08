@@ -11,7 +11,7 @@ const LeftMenu = ({ isVisible }) => {
       <div className="mt-4 rounded-tr-base rounded-tl-base bg-gray-50 px-4 py-4 w-full">
         <ul>
 
-          <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Home">Home</Link></li>
+          <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/">Home</Link></li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Walk">Walk</Link></li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"> <div id="Personal" className="xl:mr-6 sm:mr-8 md:mr-8 mr-4">
             <p className="Login">
@@ -25,27 +25,13 @@ const LeftMenu = ({ isVisible }) => {
                       signIn()
                     }}
                   >
-                    Sign in
+                    Personal
                   </a>
                 </>
               )}
               {session && (
                 <>
-                  {session.user.image && (
-                    <span
-                      className=""
-                    />
-                  )}
-                  <a
-                    href={`/api/auth/signout`}
-                    className=""
-                    onClick={(e) => {
-                      e.preventDefault()
-                      signOut()
-                    }}
-                  >
-                    Sign out
-                  </a>
+                  <Link href="/Personal">Personal</Link>
                 </>
               )}
             </p>

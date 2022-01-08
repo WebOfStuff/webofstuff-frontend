@@ -1,9 +1,9 @@
 
 import React from 'react';
 import VideoArea from '../components/Video/VideoArea';
-import { useQuery, useLazyQuery, gql, frag } from "@apollo/client";
-import { getSession,useSession, onCompleted } from "next-auth/react"
-import { findListNodeBySession, createPlaylist } from "../components/Video/Playlist";
+import { useQuery, useLazyQuery, gql } from "@apollo/client";
+import { useSession } from "next-auth/react"
+import { findPlaylistNode, createPlaylist } from "../components/Video/Playlist";
 
 const RECOMMENDATIONQUERY = gql`
   query {  
@@ -32,19 +32,24 @@ query getPlaylist($where: PlaylistWhere, $sort: [PlaylistElementsConnectionSort!
 
 export default function Walk() {
   const [getRecommendationData, { reloading, data }] = useLazyQuery(RECOMMENDATIONQUERY);
-  const { data:session, status } = useSession();
+  const { data: session, status } = useSession();
   let playlist = [];
-  let playlistNode = findListNodeBySession(session);
-  // Add playlist by cookie
+  let playlistNode;
+  if (typeof window !== 'undefined') {
+    playlistNode = findPlaylistNode(session);
+  }
   let listLoading, listError, listData;
-  listLoading, listError, listData = useQuery(LISTQUERY, { variables: { "where": { "name": playlistNode }, "sort": [{"edge": {"position": "ASC"}}]},});
-  if (listLoading || listData.loading) return 'Loading...';
-  if (listError) return `Error! ${error.message}`;
-  playlist = createPlaylist(listData)
-  
+  listLoading, listError, listData = useQuery(LISTQUERY, { skip: playlistNode == null, variables: { "where": { "name": playlistNode }, "sort": [{ "edge": { "position": "ASC" } }] }, });
+  if (playlistNode !== null) {
+    if (listLoading || listData.loading) return 'Loading...';
+    if (listError) return `Error! ${error.message}`;
+    
+    playlist = createPlaylist(listData)
+  }
+
 
   if (typeof window !== 'undefined') {
- document.addEventListener('click', function (e) {
+    document.addEventListener('click', function (e) {
       if (e.target && e.target.className === 'vjs-playlist-item-add') {
         getRecommendationData();
       }
