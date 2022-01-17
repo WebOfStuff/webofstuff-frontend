@@ -1,10 +1,9 @@
 import React from 'react';
 import videojs from 'video.js';
-import PlayerPlaylist from './PlayerPlaylist';
 import 'videojs-youtube';
 import 'videojs-playlist';
 import 'videojs-playlist-ui';
-import { useEffect,useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export default function VideoArea(props) {
   const [videoEl, setVideoEl] = useState(null)
@@ -15,32 +14,33 @@ export default function VideoArea(props) {
   useEffect(() => {
     if (videoEl == null) return
     const playlist = props.playlist;
-    const player = videojs(videoEl, props)
+    let player = videojs(videoEl, props)
     player.playlist(playlist);
     player.playlistUi();
 
-
     return () => {
-      if (player) {
+      if (player && player.isDisposed == false) {
         player.dispose();
       }
     }
   }, [props, videoEl]);
-
+  
   return (
-    <div id="PlayerContainer" className="flex">
-      <div id="VideoWrapper" className="flex-1 w-5/6 data-vjs-player" >
-        <video
-          ref={onVideo}
-          controls
-          id="preview-player"
-          preload="auto"
-          crossOrigin="anonymous"
-          className="video-js vjs-fluid vjs-big-play-centered"
-          playsInline
-        />
+    <>
+      <div id="PlayerContainer" className="flex">
+        <div id="VideoWrapper" className="flex-1 w-5/6 data-vjs-player" >
+          <video
+            ref={onVideo}
+            controls
+            id= "player"
+            preload="auto"
+            crossOrigin="anonymous"
+            className="video-js vjs-fluid vjs-big-play-centered"
+            playsInline
+          />
+        </div>
       </div>
-      <PlayerPlaylist />
-    </div>
+    </>
   );
+
 }

@@ -38,6 +38,7 @@ const LeftMenu = ({ isVisible }) => {
           </div>
           </li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Discover">Discover</Link></li>
+          <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Overview">Overview</Link></li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Options">Options</Link></li>
         </ul>
       </div>

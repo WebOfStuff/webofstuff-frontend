@@ -34,3 +34,14 @@ export function createPlaylist(listData) {
   return playlist
 }
 
+
+const Playlist = () => {
+  return (
+    <>
+      <div id="PlaylistWrapper" className="vjs-playlist w-1/6" />
+    </>
+  );
+};
+
+export default Playlist;
+

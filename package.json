@@ -13,6 +13,7 @@
     "@nivo/core": "^0.75.0",
     "@prisma/client": "^3.6.0",
     "apollo-server-micro": "^3.5.0",
+    "daisyui": "^1.22.2",
     "express": "^4.17.2",
     "graphql": "^15.8.0",
     "micro": "^9.3.4",
@@ -27,7 +28,7 @@
     "react-dom": "^17.0.2",
     "video.js": "^7.17.0",
     "videojs-playlist": "^4.3.1",
-    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.8.3.tgz",
+    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.9.6.tgz",
     "videojs-youtube": "^2.6.1"
   },
   "name": "webofstuff-frontend",
@@ -43,7 +44,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-config-next": "12.0.4",
-    "eslint-plugin-graphql": "^4.0.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "postcss": "^8.4.5",
     "query-string": "^7.0.1",
     "tailwindcss": "^3.0.8"
