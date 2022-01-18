@@ -1,6 +1,6 @@
-import { getPlaylistCookie, createPlaylistCookie } from '../Cookies/PlaylistCookies';
+import { getPlaylistCookie, createPlaylistCookie } from '../Session/PlaylistCookies';
 
-export function findPlaylistNode(session) {
+export function findPlaylistName(session) {
   let cookied, playlistNode;
   let playlistCookie = getPlaylistCookie();
   if (playlistCookie == null) {
@@ -33,7 +33,6 @@ export function createPlaylist(listData) {
   }
   return playlist
 }
-
 
 const Playlist = () => {
   return (
