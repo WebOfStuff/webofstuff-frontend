@@ -7,49 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model category {
-  cat_id        Int             @id @default(autoincrement())
-  cat_name      String?         @db.VarChar(40)
-  labelcategory labelcategory[]
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-model content {
-  c_id           Int              @id @default(autoincrement())
-  c_name         String?          @db.VarChar(50)
-  contentsources contentsources[]
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model label {
-  l_id          Int             @id @default(autoincrement())
-  l_name        String?         @db.VarChar(50)
-  labelcategory labelcategory[]
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  currentPlaylist String?
+  currentPersona  String?
+  accounts      Account[]
+  sessions      Session[]
 }
 
-model labelcategory {
-  lc_id    Int       @id @default(autoincrement())
-  l_id     Int?
-  cat_id   Int?
-  category category? @relation(fields: [cat_id], references: [cat_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_cat_id")
-  label    label?    @relation(fields: [l_id], references: [l_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_l_id")
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-  @@index([cat_id], map: "fk_cat_id")
-  @@index([l_id], map: "fk_l_id")
-}
-
-model sources {
-  s_id           Int              @id @default(autoincrement())
-  s_name         String?          @db.VarChar(20)
-  contentsources contentsources[]
-}
-
-model contentsources {
-  cs_id   Int      @id @default(autoincrement())
-  cs_url  String?  @db.VarChar(100)
-  c_id    Int?
-  s_id    Int?
-  content content? @relation(fields: [c_id], references: [c_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_c_id")
-  sources sources? @relation(fields: [s_id], references: [s_id], onDelete: Cascade, onUpdate: Restrict, map: "fk_s_id")
-
-  @@index([c_id], map: "fk_c_id")
-  @@index([s_id], map: "fk_s_id")
+  @@unique([identifier, token])
 }

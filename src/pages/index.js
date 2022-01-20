@@ -1,5 +1,4 @@
 import Player from '../components/Video/Player'
-import { prisma } from '../lib/prisma';
 
 
 export default function Home(props) {
@@ -13,11 +12,12 @@ export default function Home(props) {
 
 
 export async function getServerSideProps() {
-  const content = await prisma.contentsources.findFirst({
+  
+  /*const content = await prisma.contentsources.findFirst({
     where: {
       cs_id: 1
     }
-  });
+  });*/
 
   const videoJsOptions = {
     techOrder: ['youtube'],
@@ -25,7 +25,7 @@ export async function getServerSideProps() {
     controls: true,
     sources: [
       {
-        src: 'https://www.youtube.com/watch?v=' + content.cs_url,
+        src: 'https://www.youtube.com/watch?v=1kWtASOC0Sc',
         type: 'video/youtube',
       },
     ],

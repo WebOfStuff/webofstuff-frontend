@@ -1,9 +1,9 @@
 import {gql} from "apollo-server-micro";
 
-// TODO: get plugin for VSCode 
 export default function getTypeDefs()  {
   const typeDefs = gql`
   type Content {
+    id: String
     title: String
     youtubeid: String
     playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")

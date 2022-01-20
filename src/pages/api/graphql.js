@@ -3,6 +3,8 @@ import { Neo4jGraphQL } from "@neo4j/graphql";
 import neo4j from "neo4j-driver";
 import Cors from 'micro-cors'
 import getTypeDefs from '../../lib/gqltypedefs';
+import checkRightsForRequest from '../../components/Session/Rights/requestrights';
+import { getSession } from "next-auth/react"
 
 const cors = Cors({ allowMethods: ['PUT', 'POST'] })
 
@@ -20,6 +22,13 @@ const apolloServer = new ApolloServer({ schema: neoSchema.schema, introspection:
 const startServer = apolloServer.start();
 
 export default cors(async function handler(req, res) {
+  const session = await getSession({ req })
+  const isAllowed = checkRightsForRequest(session, req)
+  if (!isAllowed) {
+    // Not Signed in
+    res.status(401)
+  }
+  
   if (req.method === 'OPTIONS') {
     res.end()
     return false

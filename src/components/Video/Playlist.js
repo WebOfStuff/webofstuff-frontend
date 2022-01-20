@@ -19,7 +19,7 @@ export function findPlaylistName(session) {
 }
 
 export function createPlaylist(listData) {
-  let elements = listData.data?.playlists[0]?.elements;
+  let elements = listData?.data?.playlists[0]?.elements;
   let playlist = []
   if (elements !== undefined) {
     for (const element of elements) {

@@ -42,3 +42,4 @@ localhost.key
 RootCA.crt
 RootCA.key
 RootCA.pem
+prisma/migrations/*

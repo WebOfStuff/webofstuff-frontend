@@ -1,3 +1,7 @@
-export default function checkEditmode(session, playlistData, requestedEditmode) {
+// TODO: Add logic
+export default function checkRightsForRequest(session, req) {
   return true;
   }
+
+
+ 
