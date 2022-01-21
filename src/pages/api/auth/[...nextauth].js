@@ -1,10 +1,19 @@
 import NextAuth from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
-import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
-// import prisma from "../../../lib/prisma"
+import { PrismaAdapter } from "@next-auth/prisma-adapter"
+//const prisma = new PrismaClient()
 
-const prisma = new PrismaClient()
+let prisma
+
+if (process.env.NODE_ENV === "production") {
+  prisma = new PrismaClient()
+} else {
+  if (!global.prisma) {
+    global.prisma = new PrismaClient()
+  }
+  prisma = global.prisma
+}
 
 export default NextAuth({
   adapter: PrismaAdapter(prisma),

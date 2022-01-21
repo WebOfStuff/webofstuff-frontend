@@ -1,4 +1,4 @@
-//TODO: implement subscriptions
+/*TODO: implement subscriptions
 import { WebSocketLink } from '@apollo/client/link/ws';
 
 const wsLink = new WebSocketLink({
@@ -7,3 +7,4 @@ const wsLink = new WebSocketLink({
     reconnect: true
   }
 });
+*/

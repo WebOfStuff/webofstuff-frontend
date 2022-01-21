@@ -19,14 +19,14 @@ export function findPlaylistName(session) {
 }
 
 export function createPlaylist(listData) {
-  let elements = listData?.data?.playlists[0]?.elements;
-  let playlist = []
-  if (elements !== undefined) {
-    for (const element of elements) {
+  let contents = listData?.playlists[0]?.contentsConnection?.edges;
+  let playlist = [];
+  if (contents !== undefined) {
+    for (const content of contents) {
       playlist.push({
-        name: element.title,
+        name: content.node.title,
         sources: [
-          { src: 'https://www.youtube.com/watch?v=' + element.youtubeid, type: 'video/youtube' },
+          { src: 'https://www.youtube.com/watch?v=' + content.node.youtubeid, type: 'video/youtube' },
         ],
       })
     }

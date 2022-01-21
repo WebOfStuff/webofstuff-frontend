@@ -1,30 +1,22 @@
-import { gql } from "apollo-server-micro";
 
-export function getRecommendationQuery() {
-  const recommendationQuery = gql`
-  query getRecommendation{  
-    contents {
-      id
-      title
-    }
-  }
-`;
-  return recommendationQuery;
-}
+
+
+
+
 
 export function getListQuery() {
-  const listQuery = gql`
+  const listQuery = `#graphql
   query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {  
     playlists(where: $where) {
       name
       editmode
-      contents {
-        title
-        youtubeid
-      }
-      contentsConnection(sort: $sort) {
+      contentsConnection (sort: $sort) {
         edges {
           position
+          node {
+            title
+            youtubeid
+          }
         }
       }
   
@@ -44,41 +36,58 @@ export function getListQuery() {
   return listQuery;
 }
 
+export function getListVariables(playlistName){
+  const listVariables ={ "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] };
+return listVariables
+};
+
+
+export function getRecommQuery() {
+  const recommQuery = `#graphql
+  query getRecommendation{  
+    contents {
+      id
+      title
+    }
+  }
+`;
+  return recommQuery;
+}
+export function getRecommVariables(playlistName){
+  const listVariables ={ };
+return listVariables
+};
+
 export function getAddQuery() {
-  const addQuery = gql`
-  mutation Mutation($where: PlaylistWhere, $update: PlaylistUpdateInput, $connect: PlaylistConnectInput) {
-    updatePlaylists(where: $where, update: $update, connect: $connect) {
+  const addQuery = `#graphql
+  mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $sort: [PlaylistContentsConnectionSort!], $playlistName: String!, $position: Int!) {
+    updatePlaylists(where: $where, connect: $connect) {
       playlists {
-        contentsAggregate {
-          count
+        contentsConnection (sort: $sort) {
+          edges {
+            position
+            node {
+              title
+              youtubeid
+            }
+          }
         }
       }
     }
-  }
+    downtickHigherPositions(playlistName: $playlistName, position: $position) {
+      name
+    }
+   }
   `
   return addQuery;
 }
 export function getAddVariables(playlistName, position, id) {
   const addVariables =
   {
+    "position": position,
+    "playlistName": playlistName,
     "where": {
       "name": playlistName
-    },
-    "update": {
-      "contents": [
-        {
-          "where": {
-            "edge": {
-              "position_LT": position
-            }
-          },
-          "update": {
-            "edge": {
-              "position": position + 1
-            }
-          }
-        }
-      ]
     },
     "connect": {
       "contents": [
@@ -88,21 +97,86 @@ export function getAddVariables(playlistName, position, id) {
               "id": id
             }
           },
+          "connect": [
+            {
+              "playlists": [
+                {
+                  "where": {
+                    "node": {
+                      "name": playlistName
+                    }
+                  }
+                }
+              ]
+            }
+          ],
           "edge": {
             "position": position
           }
         }
       ]
-    }
+    },  
+    "sort": [{ 
+      "edge": { 
+        "position": "ASC" 
+      } 
+    }] 
   }
   return addVariables;
 }
 
-
-
-
 export function getDeleteQuery() {
-  const deleteQuery = gql`
+  const deleteQuery = `#graphql
+  mutation deleteContentfromPlaylist($position: Int!, $playlistName: String!, $where: PlaylistWhere, $disconnect: PlaylistDisconnectInput, $sort: [PlaylistContentsConnectionSort!]) {
+    updatePlaylists(where: $where, disconnect: $disconnect) {
+      playlists {
+        contentsConnection (sort: $sort) {
+          edges {
+            position
+            node {
+              title
+              youtubeid
+            }
+          }
+        }
+      }
+    }
+    downtickHigherPositions(position: $position, playlistName: $playlistName) {
+      name
+    }
+  }
+  `
+  return deleteQuery;
+}
+export function getDeleteVariables(playlistName, position) {
+  const deleteVariables =
+  {
+    "position": position,
+    "playlistName": playlistName,
+    "where": {
+      "name": playlistName
+    },
+    "disconnect": {
+      "contents": [{
+        "where": {
+          "edge": {
+            "position": position
+          }
+        }
+      }]
+    }, 
+    "sort": [{ 
+      "edge": { 
+        "position": "ASC" 
+      } 
+    }] 
+  }
+  return deleteVariables;
+}
+
+
+export function getDeleteQuery2() {
+  const deleteQuery = `#graphql
  
   `
   return deleteQuery;

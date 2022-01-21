@@ -14,11 +14,10 @@ export default function VideoArea(props) {
   useEffect(() => {
     if (videoEl == null) return
     const playlist = props.playlist;
-    if (videojs.getAllPlayers().length == 0) {
-      let player = videojs(videoEl, props)
-      player.playlist(playlist);
-      player.playlistUi();
-    }
+    let player = videojs(videoEl, props)
+    player.playlist(playlist);
+    player.playlistUi();
+
 
     return () => {
       if (player && player.isDisposed == false) {

@@ -1,13 +1,13 @@
 import { React, useCallback, useEffect, useState } from 'react';
 import VideoArea from '../components/Video/VideoArea';
-import { useQuery, useLazyQuery, useMutation, gql } from "@apollo/client";
+import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
 import Playlist, { findPlaylistName, createPlaylist } from "../components/Video/Playlist";
 import ListContents from '../components/ListContents/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
-import { getRecommendationQuery, getListQuery, getAddQuery} from '../lib/gqlqueries';
+import { getRecommQuery, getRecommVariables, getListQuery, getListVariables, getAddQuery, getDeleteQuery, getDeleteVariables } from '../lib/gqlqueries';
 
 export default function Walk() {
   // use Session if it exists
@@ -17,7 +17,7 @@ export default function Walk() {
   const router = useRouter();
 
   let { playlistName, pos, view, edit } = router.query;
-  const [viewMode, setViewMode] = useState(view || "add");
+  const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
   const [position, setPosition] = useState(pos || 1);
 
@@ -26,73 +26,90 @@ export default function Walk() {
     playlistName = findPlaylistName(session);
   }
 
+  // prepare function to load recommendations
+  let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(getRecommQuery());
+  const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(getAddQuery());
+  const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(getDeleteQuery());
   // prepare initial playlist load, skip if for example the code is run serverside. 
   // TODO: Check whether skip is necessary, since the Node is a required URL parameter 
-  const {listLoading, listError, listData} = useQuery(getListQuery(),{skip: playlistName == null, variables: { "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] }, });
+  const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(getListQuery(), {
+    skip: playlistName == null,
+    variables: getListVariables(playlistName),
+    refetchAfterMutations: [
+      {
+        mutation: getAddQuery
+      },{
+        mutation: getDeleteQuery
+      }
+    ]
+  });
 
-  // prepare function to load recommendations
-  const [getRecommendationData, { reloading, data: recommData }] = useLazyQuery(getRecommendationQuery());
-  const [sendAdd, { data: addData, addReloading, addError }] = useMutation(getAddQuery());
 
-  // give UI functions to buttons, contains Hooks
-  useHooksToAddButtonUIfunctions(getRecommendationData, setPosition);
-
-  /* reload Playlist after add
+  // give UI functions to buttons
+  const handleButtonClick = event => {
+    if (event.target && (event.target.className === 'vjs-playlist-item-buttons-add-icon-upper' || event.target.className === 'vjs-playlist-item-buttons-add-icon-lower')) {
+      setViewMode("recomm");
+      setPosition(parseInt(event.target.getAttribute("position")));
+      getRecommData({ variables: getRecommVariables(listData) });
+    }
+    if (event.target && (event.target.className === 'vjs-playlist-item-buttons-delete-icon-upper' || event.target.className === 'vjs-playlist-item-buttons-delete-icon-lower')) {
+      //TODO: make int in UI plugin
+      sendDelete({ variables: getDeleteVariables(playlistName, parseInt(event.target.getAttribute("position")))});
+      listRefetch();
+    };
+  }
   useEffect(() => {
-    refetch();
-  },
-    [addData, refetch]);
-    */
+    document.addEventListener('click', handleButtonClick);
+    return () => {
+      document.removeEventListener('click', handleButtonClick);
+    };
+  }, [handleButtonClick]);
+  
 
-
-  if (listLoading || listData?.loading || reloading || addReloading) return 'Loading...';
-  if (listError || addError) return `Error! ${error.message}`;
-
+  if (listLoading || listData?.loading || recommReloading || addLoading || deleteLoading) return 'Loading...';
+  if (listError || recommError || addError || deleteError || listLoading == undefined) return `Error! `;
 
   // find whether editing/viewing is allowed only for UI, re-check for editing upon call of graphql API
   // TODO: This should only run serverside, rightsmanagement not secure clientside? maybe serverside props, can query there?
   if (editMode !== checkEditmode(session, listData, editMode)) {
     setEditMode(checkEditmode(session, listData, editMode));
   }
-  if (viewMode !== checkEditmode(session, listData, viewMode)) {
+  /*
+  if (viewMode !== checkViewmode(session, listData, viewMode)) {
     setViewMode(checkViewmode(session, listData, viewMode));
   }
+  */
 
   let playlist = [];
   if (playlistName !== null && playlistName !== undefined) {
     playlist = createPlaylist(listData);
   }
 
-  return (
-    <>
-      <ListContents listcontentsdata={recommData} addFunction={sendAdd} playlistName={playlistName} position={position} />
-      <Playlist />
-      <VideoArea playlist={playlist} />
-    </>
-  )
-};
-
-function useHooksToAddButtonUIfunctions(getRecommendationData, setPosition) {
-  const handleAddButtonClick = useCallback(event => {
-    if (event.target && (event.target.className === 'vjs-playlist-item-buttons-add-icon-upper' || event.target.className === 'vjs-playlist-item-buttons-add-icon-lower')) {
-      setPosition(event.target.value);
-      getRecommendationData();
-    }
-  }, [getRecommendationData, setPosition]);
-  useEffect(() => {
-    document.addEventListener('click', handleAddButtonClick);
-    return () => {
-      document.removeEventListener('click', handleAddButtonClick);
-    };
-  }, [handleAddButtonClick, getRecommendationData]);
+  if (viewMode == "view") {
+        return (
+      <>
+        <Playlist />
+        <VideoArea playlist={playlist} />
+      </>
+    )
+  } else if (viewMode == "recomm") {
+    return (
+      <>
+        <ListContents listcontentsdata={recommData} addFunction={sendAdd} playlistName={playlistName} position={position} refetchFunction={listRefetch} />
+        <Playlist />
+        <VideoArea playlist={playlist} />
+      </>)
+  } else {
+    return (
+    "Wrong Viewmode '"+viewMode+"'"
+    )
+  };
 }
 
-
-
 export async function getStaticProps({ params }) {
- 
 
-  return { props: { params, fallback: false} }
+
+  return { props: { params, fallback: false } }
 }
 
 

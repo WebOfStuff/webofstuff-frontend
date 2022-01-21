@@ -1,7 +1,6 @@
-import {gql} from "apollo-server-micro";
 
 export default function getTypeDefs()  {
-  const typeDefs = gql`
+  const typeDefs = `#graphql
   type Content {
     id: String
     title: String
@@ -28,6 +27,34 @@ export default function getTypeDefs()  {
   interface PlaylistContents @relationshipProperties {
     position: Int
   }
+
+  type Mutation {
+    downtickHigherPositions(playlistName: String!, position: Int!): Playlist
+        @cypher(
+            statement: """
+            MATCH (:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
+            WHERE r.position > $position
+            SET r.position = r.position - 1 
+            RETURN r 
+            """
+        )
+  }
+
+  type Mutation {
+    uptickHigherPositions(playlistName: String!, position: Int!): Playlist
+        @cypher(
+            statement: """
+            MATCH (:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
+            WHERE r.position > $position
+            SET r.position = r.position + 1 
+            RETURN r 
+            """
+        )
+  }
+
+
+
+
 `
   return typeDefs
 }
