@@ -7,7 +7,7 @@ import Playlist, { findPlaylistName, createPlaylist } from "../components/Video/
 import ListContents from '../components/ListContents/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
-import { getRecommQuery, getRecommVariables, getListQuery, getListVariables, getAddQuery, getDeleteQuery, getDeleteVariables } from '../lib/gqlqueries';
+import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables } from '../lib/gqlqueries';
 
 export default function Walk() {
   // use Session if it exists
@@ -27,19 +27,19 @@ export default function Walk() {
   }
 
   // prepare function to load recommendations
-  let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(getRecommQuery());
-  const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(getAddQuery());
-  const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(getDeleteQuery());
+  let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(recommQuery);
+  const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
+  const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
   // prepare initial playlist load, skip if for example the code is run serverside. 
   // TODO: Check whether skip is necessary, since the Node is a required URL parameter 
-  const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(getListQuery(), {
+  const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(listQuery, {
     skip: playlistName == null,
     variables: getListVariables(playlistName),
     refetchAfterMutations: [
       {
-        mutation: getAddQuery
+        mutation: addQuery
       },{
-        mutation: getDeleteQuery
+        mutation: deleteQuery
       }
     ]
   });
@@ -47,12 +47,12 @@ export default function Walk() {
 
   // give UI functions to buttons
   const handleButtonClick = event => {
-    if (event.target && (event.target.className === 'vjs-playlist-item-buttons-add-icon-upper' || event.target.className === 'vjs-playlist-item-buttons-add-icon-lower')) {
+    if (event.target && (event.target.classList.contains('vjs-playlist-item-buttons-add-icon-previous') || event.target.classList.contains('vjs-playlist-item-buttons-add-icon-current'))) {
       setViewMode("recomm");
       setPosition(parseInt(event.target.getAttribute("position")));
       getRecommData({ variables: getRecommVariables(listData) });
     }
-    if (event.target && (event.target.className === 'vjs-playlist-item-buttons-delete-icon-upper' || event.target.className === 'vjs-playlist-item-buttons-delete-icon-lower')) {
+    if (event.target && (event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-previous') || event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-current'))) {
       //TODO: make int in UI plugin
       sendDelete({ variables: getDeleteVariables(playlistName, parseInt(event.target.getAttribute("position")))});
       listRefetch();

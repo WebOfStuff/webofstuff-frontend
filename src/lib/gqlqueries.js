@@ -4,8 +4,7 @@
 
 
 
-export function getListQuery() {
-  const listQuery = `#graphql
+export const listQuery = `#graphql
   query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {  
     playlists(where: $where) {
       name
@@ -31,10 +30,7 @@ export function getListQuery() {
       }
     }
   }
-  `;
-
-  return listQuery;
-}
+`
 
 export function getListVariables(playlistName){
   const listVariables ={ "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] };
@@ -42,24 +38,21 @@ return listVariables
 };
 
 
-export function getRecommQuery() {
-  const recommQuery = `#graphql
+export const recommQuery = `#graphql
   query getRecommendation{  
     contents {
       id
       title
     }
   }
-`;
-  return recommQuery;
-}
+`
+
 export function getRecommVariables(playlistName){
   const listVariables ={ };
 return listVariables
 };
 
-export function getAddQuery() {
-  const addQuery = `#graphql
+export const addQuery =  `#graphql
   mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $sort: [PlaylistContentsConnectionSort!], $playlistName: String!, $position: Int!) {
     updatePlaylists(where: $where, connect: $connect) {
       playlists {
@@ -79,8 +72,7 @@ export function getAddQuery() {
     }
    }
   `
-  return addQuery;
-}
+  
 export function getAddVariables(playlistName, position, id) {
   const addVariables =
   {
@@ -125,8 +117,7 @@ export function getAddVariables(playlistName, position, id) {
   return addVariables;
 }
 
-export function getDeleteQuery() {
-  const deleteQuery = `#graphql
+export const deleteQuery = `#graphql
   mutation deleteContentfromPlaylist($position: Int!, $playlistName: String!, $where: PlaylistWhere, $disconnect: PlaylistDisconnectInput, $sort: [PlaylistContentsConnectionSort!]) {
     updatePlaylists(where: $where, disconnect: $disconnect) {
       playlists {
@@ -146,8 +137,8 @@ export function getDeleteQuery() {
     }
   }
   `
-  return deleteQuery;
-}
+
+
 export function getDeleteVariables(playlistName, position) {
   const deleteVariables =
   {
@@ -174,10 +165,3 @@ export function getDeleteVariables(playlistName, position) {
   return deleteVariables;
 }
 
-
-export function getDeleteQuery2() {
-  const deleteQuery = `#graphql
- 
-  `
-  return deleteQuery;
-}
