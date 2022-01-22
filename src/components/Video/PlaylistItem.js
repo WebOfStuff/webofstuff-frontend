@@ -1,15 +1,21 @@
-import videojs from "video.js";
+//https://stackoverflow.com/questions/29879267/es6-class-multiple-inheritance
 
-export default function PlaylistItem(props) {
-  if (!props.item) {
-    throw new Error('Cannot construct a PlaylistMenuItem without an item option');
+
+import { videojs, Component as videojsComponent } from "video.js";
+import { Component as reactComponent } from "react";
+
+class PlaylistItemVidjs extends videojsComponent {
+  constructor(player, playlistindex, playlistlength) {
+    const options = { index: playlistindex, length: playlistlength };
+    (!props.item) {
+      throw new Error('Cannot construct a PlaylistMenuItem without an item option');
+    }
+    let playlistItem = props.playlistItem;
+    let player = props.player;
+    let settings = props.settings;
+    let playlistIndex = props.playlistIndex;
+    super(player, options);
   }
-  let playlistItem = props.playlistItem;
-  let player= props.player;
-  let settings= props.settings;
-  let playlistIndex=props.playlistIndex;
-
-
 
 
   playlistItem.index = props.playlistIndex;
@@ -25,17 +31,35 @@ export default function PlaylistItem(props) {
   this.on(['click', 'tap'], this.switchPlaylistItem_);
   this.on('keydown', this.handleKeyDown_);
   return (
-<>
-<li classname= 'vjs-playlist-item' tabIndex= "0">
+    <>
+      <li classname='vjs-playlist-item' tabIndex="0">
 
-</li>
+      </li>
 
-</>
+    </>
 
 
   );
 
 }
+
+
+const reactComponent = (reactComponent) => class extends reactComponent {
+  constructor(player, playlistindex, playlistlength) {
+    const options = { index: playlistindex, length: playlistlength };
+    (!props.item) {
+      throw new Error('Cannot construct a PlaylistMenuItem without an item option');
+    }
+    let playlistItem = props.playlistItem;
+    let player = props.player;
+    let settings = props.settings;
+    let playlistIndex = props.playlistIndex;
+    super(player, options);
+  }
+
+
+
+
 
 
 function handleKeyDown_(event) {
@@ -57,17 +81,18 @@ function createThumbnail(thumbnail) {
 
 
 
- if (!thumbnail) {
-  return (
-    <>
-    <div className= 'vjs-playlist-thumbnail vjs-playlist-thumbnail-placeholder'>
+  if (!thumbnail) {
+    return (
+      <>
+        <div className='vjs-playlist-thumbnail vjs-playlist-thumbnail-placeholder'>
 
-    </div>
-    </>
-  ) } else {
+        </div>
+      </>
+    )
+  } else {
     return (
       <div>
-  
+
       </div>
     )
   }
