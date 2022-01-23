@@ -3,11 +3,12 @@ import VideoArea from '../components/Video/VideoArea';
 import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
-import Playlist, { findPlaylistName, createPlaylist } from "../components/Video/Playlist";
+import Playlist, { generatePlaylistName, findPlaylistName, createPlaylist } from "../components/Video/Playlist";
 import ListContents from '../components/ListContents/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
-import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables } from '../lib/gqlqueries';
+import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables, saveQuery, saveVariables } from '../lib/gqlqueries';
+
 
 export default function Walk() {
   // use Session if it exists
@@ -16,20 +17,18 @@ export default function Walk() {
   // get dynamic URL parameters to initialize View and Edit Mode -> Recheck after Playlistdata is loaded, position is not rechecked
   const router = useRouter();
 
-  let { playlistName, pos, view, edit } = router.query;
+  let { playlistName: initialPlaylistName, pos, view, edit } = router.query;
   const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
   const [position, setPosition] = useState(pos || 1);
+  const [playlistName, setPlaylistName] = useState(initialPlaylistName || generatePlaylistName);
 
-  // find initial playlistNode
-  if (typeof window !== 'undefined' && (playlistName !== undefined && playlistName !== null)) {
-    playlistName = findPlaylistName(session);
-  }
 
   // prepare function to load recommendations
   let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(recommQuery);
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
   const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
+  const [save, { data: saveData, loading: saveLoading, error: saveError }] = useMutation(saveQuery);
   // prepare initial playlist load, skip if for example the code is run serverside. 
   // TODO: Check whether skip is necessary, since the Node is a required URL parameter 
   const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(listQuery, {
@@ -38,7 +37,7 @@ export default function Walk() {
     refetchAfterMutations: [
       {
         mutation: addQuery
-      },{
+      }, {
         mutation: deleteQuery
       }
     ]
@@ -54,7 +53,7 @@ export default function Walk() {
     }
     if (event.target && (event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-previous') || event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-current'))) {
       //TODO: make int in UI plugin
-      sendDelete({ variables: getDeleteVariables(playlistName, parseInt(event.target.getAttribute("position")))});
+      sendDelete({ variables: getDeleteVariables(playlistName, parseInt(event.target.getAttribute("position"))) });
       listRefetch();
     };
   }
@@ -64,7 +63,7 @@ export default function Walk() {
       document.removeEventListener('click', handleButtonClick);
     };
   }, [handleButtonClick]);
-  
+
 
   if (listLoading || listData?.loading || recommReloading || addLoading || deleteLoading) return 'Loading...';
   if (listError || recommError || addError || deleteError || listLoading == undefined) return `Error! `;
@@ -85,41 +84,33 @@ export default function Walk() {
     playlist = createPlaylist(listData);
   }
 
-  if (viewMode == "view") {
-        return (
-      <>
-        <Playlist />
-        <VideoArea playlist={playlist} />
-      </>
-    )
-  } else if (viewMode == "recomm") {
-    return (
-      <>
-        <ListContents listcontentsdata={recommData} addFunction={sendAdd} playlistName={playlistName} position={position} refetchFunction={listRefetch} />
-        <Playlist />
-        <VideoArea playlist={playlist} />
-      </>)
-  } else {
-    return (
-    "Wrong Viewmode '"+viewMode+"'"
-    )
-  };
+  return (
+    <>
+      {(viewMode == "recomm") && <ListContents listcontentsdata={recommData} addFunction={sendAdd} playlistName={playlistName} position={position} refetchFunction={listRefetch} />}
+      <Playlist playlist={playlist} setPlaylistName={setPlaylistName} session={session} />
+      <VideoArea playlist={playlist} />
+    </>)
 }
 
 export async function getStaticProps({ params }) {
-
-
   return { props: { params, fallback: false } }
 }
 
 
 
 export async function getStaticPaths() {
-  debugger;
   return {
     paths: [
       { params: { playlistName: 'aseftalangi@gmail.com' } }
     ],
     fallback: false // false or 'blocking'
   };
+}
+
+export function startNewPlaylist(playlist, setPlaylistName, session) {
+  let newPlaylistname = generatePlaylistName();
+  setUrl(newPlaylistname)
+  setPlaylistName(newPlaylistname)
+  session.setPlaylistName(newPlaylistname);
+  playlist = []
 }

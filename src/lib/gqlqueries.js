@@ -1,9 +1,4 @@
 
-
-
-
-
-
 export const listQuery = `#graphql
   query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {  
     playlists(where: $where) {
@@ -32,9 +27,9 @@ export const listQuery = `#graphql
   }
 `
 
-export function getListVariables(playlistName){
-  const listVariables ={ "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] };
-return listVariables
+export function getListVariables(playlistName) {
+  const listVariables = { "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] };
+  return listVariables
 };
 
 
@@ -47,32 +42,28 @@ export const recommQuery = `#graphql
   }
 `
 
-export function getRecommVariables(playlistName){
-  const listVariables ={ };
-return listVariables
+export function getRecommVariables(playlistName) {
+  const listVariables = {};
+  return listVariables
 };
 
-export const addQuery =  `#graphql
-  mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $sort: [PlaylistContentsConnectionSort!], $playlistName: String!, $position: Int!) {
-    updatePlaylists(where: $where, connect: $connect) {
-      playlists {
-        contentsConnection (sort: $sort) {
-          edges {
-            position
-            node {
-              title
-              youtubeid
-            }
-          }
-        }
-      }
-    }
-    downtickHigherPositions(playlistName: $playlistName, position: $position) {
+export const addQuery = `#graphql
+  mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $playlistName: String!, $position: Int!) {
+    uptickPlaylistStartingAtPosition(playlistName: $playlistName, position: $position) {
       name
+    }
+    updatePlaylists(where: $where, connect: $connect) {
+      info {
+        relationshipsCreated
+        relationshipsDeleted
+        nodesDeleted
+        nodesCreated
+        bookmark
+      }
     }
    }
   `
-  
+
 export function getAddVariables(playlistName, position, id) {
   const addVariables =
   {
@@ -85,51 +76,27 @@ export function getAddVariables(playlistName, position, id) {
       "contents": [
         {
           "where": {
-            "node": {
-              "id": id
-            }
+            "node": { "id": id }
           },
-          "connect": [
-            {
-              "playlists": [
-                {
-                  "where": {
-                    "node": {
-                      "name": playlistName
-                    }
-                  }
-                }
-              ]
-            }
-          ],
           "edge": {
             "position": position
           }
         }
       ]
-    },  
-    "sort": [{ 
-      "edge": { 
-        "position": "ASC" 
-      } 
-    }] 
+    }
   }
   return addVariables;
 }
 
 export const deleteQuery = `#graphql
-  mutation deleteContentfromPlaylist($position: Int!, $playlistName: String!, $where: PlaylistWhere, $disconnect: PlaylistDisconnectInput, $sort: [PlaylistContentsConnectionSort!]) {
+  mutation deleteContentfromPlaylist($position: Int!, $playlistName: String!, $where: PlaylistWhere, $disconnect: PlaylistDisconnectInput) {
     updatePlaylists(where: $where, disconnect: $disconnect) {
-      playlists {
-        contentsConnection (sort: $sort) {
-          edges {
-            position
-            node {
-              title
-              youtubeid
-            }
-          }
-        }
+      info {
+        relationshipsCreated
+        relationshipsDeleted
+        nodesDeleted
+        nodesCreated
+        bookmark
       }
     }
     downtickHigherPositions(position: $position, playlistName: $playlistName) {
@@ -155,13 +122,32 @@ export function getDeleteVariables(playlistName, position) {
           }
         }
       }]
-    }, 
-    "sort": [{ 
-      "edge": { 
-        "position": "ASC" 
-      } 
-    }] 
+    },
   }
   return deleteVariables;
 }
 
+export const saveQuery = `#graphql
+  mutation savePlaylist($where: PlaylistWhere) {
+    updatePlaylists(where: $where) {
+      info {
+        relationshipsCreated
+        relationshipsDeleted
+        nodesDeleted
+        nodesCreated
+        bookmark
+      }
+    }
+  }
+  `
+
+export function saveVariables(playlistName) {
+  const saveVariables =
+  {
+    "playlistName": playlistName,
+    "where": {
+      "name": playlistName
+    }
+  }
+  return saveVariables;
+}

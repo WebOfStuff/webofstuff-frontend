@@ -1,5 +1,5 @@
 
-export default function getTypeDefs()  {
+export default function getTypeDefs() {
   const typeDefs = `#graphql
   type Content {
     id: String
@@ -29,6 +29,18 @@ export default function getTypeDefs()  {
   }
 
   type Mutation {
+    addContentToPlaylist(contentId: String!, playlistName: String!, position: Int!): Playlist
+         @cypher(
+            statement: """
+            MATCH (p:Playlist {name:$playlistName}),(c:Content  {id:$contentId}})
+            CreateOrConnect c-[r:INCLUDED_IN {position:$position}]->p
+            RETURN p
+            """
+          )
+  }
+
+
+  type Mutation {
     downtickHigherPositions(playlistName: String!, position: Int!): Playlist
         @cypher(
             statement: """
@@ -41,11 +53,11 @@ export default function getTypeDefs()  {
   }
 
   type Mutation {
-    uptickHigherPositions(playlistName: String!, position: Int!): Playlist
+    uptickPlaylistStartingAtPosition(playlistName: String!, position: Int!): Playlist
         @cypher(
             statement: """
             MATCH (:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
-            WHERE r.position > $position
+            WHERE r.position >= $position
             SET r.position = r.position + 1 
             RETURN r 
             """

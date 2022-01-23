@@ -1,13 +1,12 @@
 import { getPlaylistCookie, createPlaylistCookie } from '../Session/PlaylistCookies';
+import startNewPlaylist from '../../pages/[playlistName]';
 
 export function findPlaylistName(session) {
-  let cookied, playlistNode;
+  let playlistNode;
   let playlistCookie = getPlaylistCookie();
-  if (playlistCookie == null) {
-    cookied = false;
-  } else {
-    cookied = true;
-  }
+  let cookied = (playlistCookie == null) ? false : true;
+ 
+  
   if (session !== undefined && session !== null) {
     playlistNode = session.user.email;
   } else if (cookied) {
@@ -34,13 +33,28 @@ export function createPlaylist(listData) {
   return playlist
 }
 
-const Playlist = () => {
+function Playlist(props) {
+  let playlist=props.playlist;
   return (
     <>
-      <div id="PlaylistWrapper" className="vjs-playlist w-1/6" />
+      <div className="formdiv w-1/6">
+        <div className="form-control">
+          <div className="flex space-x-2">
+            <input type="text" placeholder="Title" className="w-full input input-primary input-bordered" 
+            onClick={startNewPlaylist(playlist, props.setPlaylistName, props.session)}/>
+            <button className="btn btn-primary ">x</button>
+            <button className="btn btn-tertiary">SAVE</button>
+          </div>
+          <div className="divider">
+
+          </div>
+        </div>
+        <div id="PlaylistWrapper" className="vjs-playlist" />
+      </div>
     </>
   );
 };
 
 export default Playlist;
+
 
