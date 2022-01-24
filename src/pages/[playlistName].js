@@ -58,11 +58,15 @@ export default function Walk() {
     };
   }
   useEffect(() => {
+    let elements = document.getElementsByClassName("vjs-playlist-item-buttons-add-icon-current "+position);
+    if (elements.length!==0){
+      elements[0].style.display = "block"
+    }
     document.addEventListener('click', handleButtonClick);
     return () => {
       document.removeEventListener('click', handleButtonClick);
     };
-  }, [handleButtonClick]);
+  }, [handleButtonClick,position]);
 
 
   if (listLoading || listData?.loading || recommReloading || addLoading || deleteLoading) return 'Loading...';

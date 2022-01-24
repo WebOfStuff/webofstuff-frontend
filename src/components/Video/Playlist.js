@@ -6,7 +6,7 @@ export function findPlaylistName(session) {
   let playlistCookie = getPlaylistCookie();
   let cookied = (playlistCookie == null) ? false : true;
  
-  
+
   if (session !== undefined && session !== null) {
     playlistNode = session.user.email;
   } else if (cookied) {
@@ -40,10 +40,11 @@ function Playlist(props) {
       <div className="formdiv w-1/6">
         <div className="form-control">
           <div className="flex space-x-2">
-            <input type="text" placeholder="Title" className="w-full input input-primary input-bordered" 
-            onClick={startNewPlaylist(playlist, props.setPlaylistName, props.session)}/>
-            <button className="btn btn-primary ">x</button>
-            <button className="btn btn-tertiary">SAVE</button>
+            <input type="text" placeholder="Title" className="w-full input input-primary input-bordered" />
+          </div>
+          <div className="flex space-x-2">
+            <button className="btn btn-primary w-1/2">Restart</button>
+            <button className="btn btn-tertiary w-1/2"  onClick= {() => {startNewPlaylist(playlist, props.setPlaylistName, props.session)}}>Save</button>
           </div>
           <div className="divider">
 
