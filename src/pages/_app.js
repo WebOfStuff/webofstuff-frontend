@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import 'video.js/dist/video-js.css'
-import 'videojs-playlist-ui/dist/videojs-playlist-ui.vertical.css'
+import '../styles/videojs.scss'
 import Layout from '../components/Layout'
 import { SessionProvider } from "next-auth/react"
 import { GraphQLClient, ClientContext } from 'graphql-hooks'

@@ -2,26 +2,30 @@ import React from 'react';
 import videojs from 'video.js';
 import 'videojs-youtube';
 import 'videojs-playlist';
-import 'videojs-playlist-ui';
 import { useEffect, useState, useCallback } from 'react';
+import {Playlist as PlaylistFunction} from './Playlist';
 
-export default function VideoArea(props) {
-  const [videoEl, setVideoEl] = useState(null)
+export default function PlayerWithPlaylist(props) {
+  let {playlistData, playlistName, changeToRecommMode} = props;
+  const [videoEl, setVideoEl] = useState(null);
   const onVideo = useCallback((el) => {
     setVideoEl(el)
   }, [])
+  const [gotPlayer, setGotPlayer] = useState(false)
 
   useEffect(() => {
     if (videoEl == null) return
-    const playlist = props.playlist;
+    
     let player = videojs(videoEl, props)
-    player.playlist(playlist);
-    player.playlistUi();
-
+    player.playlist(playlistData);
+    player.autoplay(true);
+    //player.playlistUi();
+    setGotPlayer(true);
 
     return () => {
       if (player && player.isDisposed == false) {
         player.dispose();
+        setGotPlayer(false);
       }
     }
   }, [props, videoEl]);
@@ -41,6 +45,7 @@ export default function VideoArea(props) {
           />
         </div>
       </div>
+      {gotPlayer &&<PlaylistFunction player = {player} playlistData={playlistData} playlistName={playlistName} changeToRecommMode= {changeToRecommMode}/>}
     </>
   );
 

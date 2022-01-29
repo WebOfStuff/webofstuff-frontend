@@ -1,35 +1,25 @@
-import { React, useCallback, useEffect, useState } from 'react';
-import VideoArea from '../components/Video/VideoArea';
+import { React, useState } from 'react';
+import PlayerWithPlaylist from '../components/Video/PlayerWithPlaylist';
 import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
-import Playlist, { findPlaylistName, createPlaylist } from "../components/Video/Playlist";
+import { createPlaylist } from "../components/Video/Playlist";
 import ListContents from '../components/ListContents/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
 import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables } from '../lib/gqlqueries';
 
-export default function Walk() {
+export default function Walk(props) {
   // use Session if it exists
   const { data: session, status } = useSession();
 
   // get dynamic URL parameters to initialize View and Edit Mode -> Recheck after Playlistdata is loaded, position is not rechecked
   const router = useRouter();
-
   let { playlistName, pos, view, edit } = router.query;
   const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
   const [position, setPosition] = useState(pos || 1);
 
-  // find initial playlistNode
-  if (typeof window !== 'undefined' && (playlistName !== undefined && playlistName !== null)) {
-    playlistName = findPlaylistName(session);
-  }
-
-  // prepare function to load recommendations
-  let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(recommQuery);
-  const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
-  const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
   // prepare initial playlist load, skip if for example the code is run serverside. 
   // TODO: Check whether skip is necessary, since the Node is a required URL parameter 
   const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(listQuery, {
@@ -38,36 +28,16 @@ export default function Walk() {
     refetchAfterMutations: [
       {
         mutation: addQuery
-      },{
+      }, {
         mutation: deleteQuery
       }
     ]
   });
 
+  let [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(recommQuery);
 
-  // give UI functions to buttons
-  const handleButtonClick = event => {
-    if (event.target && (event.target.classList.contains('vjs-playlist-item-buttons-add-icon-previous') || event.target.classList.contains('vjs-playlist-item-buttons-add-icon-current'))) {
-      setViewMode("recomm");
-      setPosition(parseInt(event.target.getAttribute("position")));
-      getRecommData({ variables: getRecommVariables(listData) });
-    }
-    if (event.target && (event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-previous') || event.target.classList.contains('vjs-playlist-item-buttons-delete-icon-current'))) {
-      //TODO: make int in UI plugin
-      sendDelete({ variables: getDeleteVariables(playlistName, parseInt(event.target.getAttribute("position")))});
-      listRefetch();
-    };
-  }
-  useEffect(() => {
-    document.addEventListener('click', handleButtonClick);
-    return () => {
-      document.removeEventListener('click', handleButtonClick);
-    };
-  }, [handleButtonClick]);
-  
-
-  if (listLoading || listData?.loading || recommReloading || addLoading || deleteLoading) return 'Loading...';
-  if (listError || recommError || addError || deleteError || listLoading == undefined) return `Error! `;
+  if (listLoading || listData?.loading || recommReloading) return 'Loading...';
+  if (listError || recommError || listLoading == undefined) return `Error! `;
 
   // find whether editing/viewing is allowed only for UI, re-check for editing upon call of graphql API
   // TODO: This should only run serverside, rightsmanagement not secure clientside? maybe serverside props, can query there?
@@ -80,39 +50,39 @@ export default function Walk() {
   }
   */
 
-  let playlist = [];
+  let playlistData = [];
   if (playlistName !== null && playlistName !== undefined) {
-    playlist = createPlaylist(listData);
+    playlistData = createPlaylist(listData);
   }
 
   if (viewMode == "view") {
-        return (
+    return (
       <>
-        <Playlist />
-        <VideoArea playlist={playlist} />
+        <PlayerWithPlaylist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} />
       </>
     )
   } else if (viewMode == "recomm") {
     return (
       <>
-        <ListContents listcontentsdata={recommData} addFunction={sendAdd} playlistName={playlistName} position={position} refetchFunction={listRefetch} />
-        <Playlist />
-        <VideoArea playlist={playlist} />
+        <ListContents listcontentsdata={recommData} playlistName={playlistName} position={position} />
+        <PlayerWithPlaylist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} />
       </>)
   } else {
     return (
-    "Wrong Viewmode '"+viewMode+"'"
+      "Wrong Viewmode '" + viewMode + "'"
     )
   };
+
+  function changeToRecommMode(position, listData) {
+    setViewMode("recomm");
+    setPosition(position);
+    getRecommData({ variables: getRecommVariables(listData) });
+  }
 }
 
 export async function getStaticProps({ params }) {
-
-
   return { props: { params, fallback: false } }
 }
-
-
 
 export async function getStaticPaths() {
   debugger;

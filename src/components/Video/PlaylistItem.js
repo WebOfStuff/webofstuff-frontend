@@ -1,231 +1,103 @@
-//https://stackoverflow.com/questions/29879267/es6-class-multiple-inheritance
+import videojs from "video.js";
+import 'videojs-playlist';
+import Button from "../Base/Button";
+import React from 'react';
+import { useMutation } from 'graphql-hooks'
+import { addQuery, deleteQuery, getDeleteVariables } from "../../lib/gqlqueries"
 
 
-import { videojs, Component as videojsComponent } from "video.js";
-import { Component as reactComponent } from "react";
+export function PlaylistItem(props) {
+  const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
+  let player = videojs.getPlayer("player")
+  let { specialLocation, playlistItem, playlistName, position, showDescription, playOnSelect, changeToRecommMode, playlistData } = props;
+  let itemButtonsClassname = "vjs-playlist-item-button";
+  let addButtonClassnameBottom = "vjs-playlist-item-buttons-add-icon-bottom";
+  let addButtonClassnameTop = "vjs-playlist-item-buttons-add-icon-top";
+  let deleteButtonClassnameTop = "vjs-playlist-item-buttons-delete-icon-top";
+  let deleteButtonClassnameBottom = "vjs-playlist-item-buttons-delete-icon-bottom";
+  let time, duration, titleText, descriptionText, nowPlayingText, upNext;
+  let bgColor = getRandomColor();
+  let nextposition = position + 1;
 
-class PlaylistItemVidjs extends videojsComponent {
-  constructor(player, playlistindex, playlistlength) {
-    const options = { index: playlistindex, length: playlistlength };
-    (!props.item) {
-      throw new Error('Cannot construct a PlaylistMenuItem without an item option');
+  if (typeof playlistItem !== 'undefined') {
+    if (playlistItem.duration) {
+      time = videojs.formatTime(playlistItem.duration);
+      duration = 'PT0H0M' + playlistItem.duration + 'S'
     }
-    let playlistItem = props.playlistItem;
-    let player = props.player;
-    let settings = props.settings;
-    let playlistIndex = props.playlistIndex;
-    super(player, options);
+
+    nowPlayingText = '';
+    //TODO: Lokalisierung
+    titleText = playlistItem.name || 'Untitled Video';
+    upNext = "Up Next"
+    descriptionText = playlistItem.description || '';
+  } else {
+    //TODO: Use backgroundcolor
+    bgColor = "#ffffff"
   }
 
-
-  playlistItem.index = props.playlistIndex;
-  playlistItem.showDescription = props.settings.showDescription;
-
-
-  let item = playlistItem.item;
-  let playOnSelect = settings.playOnSelect;
-
-  videojs.emitTapEvents();
-
-  //TODO:
-  this.on(['click', 'tap'], this.switchPlaylistItem_);
-  this.on('keydown', this.handleKeyDown_);
-  return (
-    <>
-      <li classname='vjs-playlist-item' tabIndex="0">
-
-      </li>
-
-    </>
-
-
-  );
-
-}
-
-
-const reactComponent = (reactComponent) => class extends reactComponent {
-  constructor(player, playlistindex, playlistlength) {
-    const options = { index: playlistindex, length: playlistlength };
-    (!props.item) {
-      throw new Error('Cannot construct a PlaylistMenuItem without an item option');
-    }
-    let playlistItem = props.playlistItem;
-    let player = props.player;
-    let settings = props.settings;
-    let playlistIndex = props.playlistIndex;
-    super(player, options);
-  }
-
-
-
-
-
-
-function handleKeyDown_(event) {
-  // keycode 13 is <Enter>
-  // keycode 32 is <Space>
-  if (event.which === 13 || event.which === 32) {
-    switchPlaylistItem_();
-  }
-}
-
-function switchPlaylistItem_(event) {
-  this.player_.playlist.currentItem(indexOf(this.player_.playlist(), this.item));
-  if (playOnSelect) {
-    this.player_.play();
-  }
-}
-
-function createThumbnail(thumbnail) {
-
-
-
-  if (!thumbnail) {
+  if (specialLocation == undefined) {
     return (
       <>
-        <div className='vjs-playlist-thumbnail vjs-playlist-thumbnail-placeholder'>
-
-        </div>
+        <li className='vjs-playlist-item' position={position} style={{ backgroundColor: bgColor }} onTouchStart={(event) => switchPlaylistItem_(position)} onClick={(event) => switchPlaylistItem_(position)} onKeyDown={() => handleKeyDown_()}>
+          <div className={itemButtonsClassname}>
+            <Button className={addButtonClassnameTop} src="/assets/add.svg" position={position} onClick={() => changeToRecommMode(position, playlistData)} />
+            <Button className={deleteButtonClassnameBottom} position={position} src="/assets/delete.svg" onClick={() => deleteItem()} />
+            <div className="vjs-playlist-title-container">
+              <span className="vjs-playlist-now-playing-text" title={nowPlayingText}>{nowPlayingText}</span>
+              <span className="vjs-up-next-text" title={upNext}>{upNext}</span>
+              <cite className="vjs-playlist-name" title={titleText}>{titleText}</cite>
+            </div>
+            {playlistItem.duration && <time className='vjs-playlist-duration' datetime={duration}>{time}</time>}
+            {showDescription && <div className='vjs-playlist-description' title={descriptionText}>{descriptionText}</div>}
+          </div>
+          <div className={itemButtonsClassname}>
+            <Button className={addButtonClassnameBottom}  src="/assets/add.svg" position={nextposition} onClick={() => changeToRecommMode(nextposition, playlistData)} />
+            <Button className={deleteButtonClassnameTop} position={position} src="/assets/delete.svg" onClick={() => deleteItem()} />
+          </div>
+        </li>
       </>
     )
   } else {
     return (
-      <div>
-
-      </div>
+      <>
+        <li className='buffer' style={{ backgroundColor: bgColor }} onClick={() => changeToRecommMode(position, playlistData)} >
+          <div className={itemButtonsClassname}>
+            <Button className={specialLocation == "last" ? addButtonClassnameTop : addButtonClassnameBottom} src="/assets/add.svg" position={position} onClick={() => changeToRecommMode(position, playlistData)} />
+          </div>
+        </li>
+      </>
     )
   }
 
 
-  if (!thumbnail) {
-    const placeholder = document.createElement('div');
-
-    placeholder.className = 'vjs-playlist-thumbnail vjs-playlist-thumbnail-placeholder';
-    return placeholder;
+  function deleteItem() {
+    sendDelete({ variables: getDeleteVariables(playlistName, position) });
+    //listRefetch();
   }
 
-  const picture = document.createElement('picture');
 
-  picture.className = 'vjs-playlist-thumbnail';
-
-  if (typeof thumbnail === 'string') {
-    // simple thumbnails
-    const img = document.createElement('img');
-
-    img.src = thumbnail;
-    img.alt = '';
-    picture.className = 'vjs-playlist-thumbnail-img';
-    picture.appendChild(img);
-  } else {
-    // responsive thumbnails
-
-    // additional variations of a <picture> are specified as
-    // <source> elements
-    for (let i = 0; i < thumbnail.length - 1; i++) {
-      const variant = thumbnail[i];
-      const source = document.createElement('source');
-
-      // transfer the properties of each variant onto a <source>
-      for (const prop in variant) {
-        source[prop] = variant[prop];
-      }
-      picture.appendChild(source);
+  function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
     }
+    return color;
+  }
 
-    // the default version of a <picture> is specified by an <img>
-    const variant = thumbnail[thumbnail.length - 1];
-    const img = document.createElement('img');
-
-    img.alt = '';
-    for (const prop in variant) {
-      img[prop] = variant[prop];
+  function handleKeyDown_(event) {
+    // keycode 13 is <Enter>
+    // keycode 32 is <Space>
+    if (event.which === 13 || event.which === 32) {
+      switchPlaylistItem_();
     }
-    picture.appendChild(img);
-  }
-  return picture;
-};
-
-
-
-
-createEl() {
-  const li = document.createElement('li');
-  const item = this.options_.item;
-  const showDescription = this.options_.showDescription;
-
-  if (typeof item.data === 'object') {
-    const dataKeys = Object.keys(item.data);
-
-    dataKeys.forEach(key => {
-      const value = item.data[key];
-
-      li.dataset[key] = value;
-    });
   }
 
-  li.className = 'vjs-playlist-item';
-  li.setAttribute('tabIndex', 0);
-
-  // Thumbnail image
-  this.thumbnail = createThumbnail(item.thumbnail);
-  li.appendChild(this.thumbnail);
-
-  // Duration
-  if (item.duration) {
-    const duration = document.createElement('time');
-    const time = videojs.formatTime(item.duration);
-
-    duration.className = 'vjs-playlist-duration';
-    duration.setAttribute('datetime', 'PT0H0M' + item.duration + 'S');
-    duration.appendChild(document.createTextNode(time));
-    li.appendChild(duration);
+  function switchPlaylistItem_(event) {
+    //  setViewMode("add");
+    player.playlist.currentItem(position - 1);
+    if (playOnSelect) {
+      player.play();
+    }
   }
-
-  // Now playing
-  const nowPlayingEl = document.createElement('span');
-  // const nowPlayingText = this.localize('Now Playing');
-  const nowPlayingText = '';
-
-  nowPlayingEl.className = 'vjs-playlist-now-playing-text';
-  nowPlayingEl.appendChild(document.createTextNode(nowPlayingText));
-  nowPlayingEl.setAttribute('title', nowPlayingText);
-  this.thumbnail.appendChild(nowPlayingEl);
-
-  // Title container contains title and "up next"
-  const titleContainerEl = document.createElement('div');
-
-  titleContainerEl.className = 'vjs-playlist-title-container';
-  this.thumbnail.appendChild(titleContainerEl);
-
-  // Up next
-  const upNextEl = document.createElement('span');
-  const upNextText = this.localize('Up Next');
-
-  upNextEl.className = 'vjs-up-next-text';
-  upNextEl.appendChild(document.createTextNode(upNextText));
-  upNextEl.setAttribute('title', upNextText);
-  titleContainerEl.appendChild(upNextEl);
-
-  // Video title
-  const titleEl = document.createElement('cite');
-  const titleText = item.name || this.localize('Untitled Video');
-
-  titleEl.className = 'vjs-playlist-name';
-  titleEl.appendChild(document.createTextNode(titleText));
-  titleEl.setAttribute('title', titleText);
-  titleContainerEl.appendChild(titleEl);
-
-  // We add thumbnail video description only if specified in playlist options
-  if (showDescription) {
-    const descriptionEl = document.createElement('div');
-    const descriptionText = item.description || '';
-
-    descriptionEl.className = 'vjs-playlist-description';
-    descriptionEl.appendChild(document.createTextNode(descriptionText));
-    descriptionEl.setAttribute('title', descriptionText);
-    titleContainerEl.appendChild(descriptionEl);
-  }
-  return li;
-}
 }
