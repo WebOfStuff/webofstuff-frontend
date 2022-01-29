@@ -16,7 +16,7 @@ export default function Walk(props) {
 
   // get dynamic URL parameters to initialize View and Edit Mode -> Recheck after Playlistdata is loaded, position is not rechecked
   const router = useRouter();
-  let { playlistName, pos, view, edit } = router.query;
+  let { playlistName: initialPlaylistName,  pos, view, edit } = router.query;
   const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
   const [position, setPosition] = useState(pos || 1);
