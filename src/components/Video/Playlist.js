@@ -25,7 +25,7 @@ export function Playlist(props) {
 
   return (
     <>
-      <ol id="Playlist" className="w-1/6 flex-none relative p-0 -top-[5vh]">
+      <ol id="Playlist" className="relative p-0 -top-[5vh]">
         <PlaylistItem key="first" specialLocation="first" position="1" playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>
         {listItems}
         <PlaylistItem key="last" specialLocation="last" position={playlistData.length + 1} playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>

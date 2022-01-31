@@ -80,7 +80,7 @@ export function PlaylistItem(props) {
   function buildItemclassname(playlistItem, position) {
     let bgClassname = (playlistItem && position % 2 == 1) ? "bg-primary " : "bg-secondary "
     let textClassname = (playlistItem && position % 2 == 1) ? "text-primary-content " : "text-secondary-content "
-    return (bgClassname + textClassname + 'w-full block relative cursor-pointer overflow-visible')
+    return (bgClassname + textClassname + ' rounded-lg w-full block relative cursor-pointer overflow-visible')
   }
 
 

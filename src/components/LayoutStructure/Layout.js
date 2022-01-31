@@ -1,14 +1,12 @@
-import LeftMenu from "./LeftMenu/LeftMenu";
-import TopMenu from "./TopMenu/TopMenu";
-import BottomMenu from "./BottomMenu/BottomMenu";
+import LeftMenu from "./LeftMenu";
+import TopMenu from "./TopMenu";
+import BottomMenu from "./BottomMenu";
 
 export default function Layout ({ children }) {
   return ( 
-    <div id="website" className="h-screen">
-      <div id="topmenus" className="h-[5vh] w-full">
+    <div id="website" className="h-screen overflow-hidden">
         <TopMenu />
-      </div>
-      <div id="contentarea" className="h-[90vh] flex flex-row w-full overflow-">
+      <div id="contentarea" className="h-[90vh] flex flex-row w-full">
         <div id="leftmenu" className="w-[10vw]">
           <LeftMenu />
         </div>

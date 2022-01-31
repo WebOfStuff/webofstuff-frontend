@@ -4,10 +4,11 @@ import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
 import { Playlist, createPlaylist } from "../components/Video/Playlist";
-import ListContents from '../components/ListContents/ListContents';
+import ListContents from '../components/Base/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
 import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables, saveQuery, saveVariables } from '../lib/gqlqueries';
+import Box from "../components/Base/Box";
 
 export default function Walk(props) {
   // use Session if it exists
@@ -55,27 +56,35 @@ export default function Walk(props) {
   if (playlistName !== null && playlistName !== undefined) {
     playlistData = createPlaylist(listData);
   }
- let friends;
+  let friends;
   if (viewMode == "view") {
     friends =
       <>
-        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+        <Box>
+          <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+        </Box>
       </>
   } else if (viewMode == "recomm") {
     friends =
       <>
-        <ListContents listcontentsdata={recommData} playlistName={playlistName} focusPosition={focusPosition} />
-        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+        <Box>  
+          <ListContents listcontentsdata={recommData} playlistName={playlistName} focusPosition={focusPosition} />
+        </Box>
+        <Box>
+          <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+        </Box>
       </>
   }
 
   return (
     <>
-      <div id="PlaylistAndFriends" className="w-full flex flex-1 overflow-none">
+      <div id="PlaylistAndFriends" className="w-full flex flex-1">
         <div id="Friends" className="flex-auto items-stretch">
           {friends}
         </div>
+        <Box className="flex-none w-1/6 overflow-visible">
         <Playlist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+        </Box>
       </div>
     </>
   )
