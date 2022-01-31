@@ -1,25 +1,24 @@
 import React from 'react';
 import { addQuery, getAddVariables } from '../../lib/gqlqueries';
 import { useMutation } from 'graphql-hooks'
+import Button from '../Base/Button';
 
 export default function ListContents(props) {
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
-  let { playlistName, position, listcontentsdata } = props
+  let { playlistName, focusPosition, listcontentsdata } = props
   let contents = listcontentsdata.contents;
-
+  let algorithm = "normal"
   let listItems;
   if (contents !== undefined) {
     listItems = contents.map((item, index) =>
-      <tr key={item.id}>
-        <th>
-          <button className="btn btn-circle" value={item.id} onClick={() => addItem(item.id)}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-6 h-6 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </th>
-        <td>{item.title}</td>
-      </tr>
+      <>
+        <tr key={item.id}>
+          <th>
+            <Button className="h-[5vh] w-[5vh] z-20 relative left-1/6" src="/assets/add.svg" value={item.id} onClick={() => addItem(playlistName, focusPosition, item.id)}></Button>
+          </th>
+          <td>{item.title}</td>
+        </tr>
+      </>
     );
 
   } else {
@@ -33,8 +32,8 @@ export default function ListContents(props) {
 
   return (
     <>
-      <div className="overflow-x-auto">
-        <table className="table w-full table-zebra">
+      <div id="recomm" className="overflow-x-auto">
+        <table id="recomm-item" algorithm={algorithm} className="table w-full table-zebra">
           <thead>
             <tr>
               <th></th>
@@ -49,7 +48,7 @@ export default function ListContents(props) {
     </>
   )
 
-  function addItem(id) {
+  function addItem(playlistName, position, id) {
     let addVariables = getAddVariables(playlistName, position, id);
     sendAdd({ variables: addVariables })
   }

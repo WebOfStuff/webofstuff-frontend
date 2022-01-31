@@ -4,19 +4,19 @@ import BottomMenu from "./BottomMenu/BottomMenu";
 
 export default function Layout ({ children }) {
   return ( 
-    <div id="website" className="flex flex-col h-full">
-      <div id="topmenus" className="h-1/6 w-full">
+    <div id="website" className="h-screen">
+      <div id="topmenus" className="h-[5vh] w-full">
         <TopMenu />
       </div>
-      <div id="contentarea" className="flex flex-row h-4/6 w-full">
-        <div id="leftmenu" className="w-1/6">
+      <div id="contentarea" className="h-[90vh] flex flex-row w-full overflow-">
+        <div id="leftmenu" className="w-[10vw]">
           <LeftMenu />
         </div>
-        <div id="content" className="w-5/6">
+        <div id="content" className="w-[90vw]">
           {children}
         </div>
       </div>
-      <div id="bottommenu" className="h-1/6 w-full">
+      <div id="bottommenu" className="h-[5vh] w-full">
         <BottomMenu />
       </div>
     </div>

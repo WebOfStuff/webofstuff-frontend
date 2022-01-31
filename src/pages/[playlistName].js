@@ -1,14 +1,13 @@
 import { React, useState } from 'react';
-import PlayerWithPlaylist from '../components/Video/PlayerWithPlaylist';
+import Player from '../components/Video/Player';
 import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
 import { useRouter } from 'next/router'
-import { createPlaylist } from "../components/Video/Playlist";
+import { Playlist, createPlaylist } from "../components/Video/Playlist";
 import ListContents from '../components/ListContents/ListContents';
 import checkViewmode from '../components/Session/Rights/viewRights';
 import checkEditmode from '../components/Session/Rights/editRights';
 import { recommQuery, getRecommVariables, listQuery, getListVariables, addQuery, deleteQuery, getDeleteVariables, saveQuery, saveVariables } from '../lib/gqlqueries';
-
 
 export default function Walk(props) {
   // use Session if it exists
@@ -16,10 +15,10 @@ export default function Walk(props) {
 
   // get dynamic URL parameters to initialize View and Edit Mode -> Recheck after Playlistdata is loaded, position is not rechecked
   const router = useRouter();
-  let { playlistName: initialPlaylistName,  pos, view, edit } = router.query;
+  let { playlistName: initialPlaylistName, pos, view, edit } = router.query;
   const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
-  const [position, setPosition] = useState(pos || 1);
+  const [focusPosition, setPosition] = useState(pos || 1);
   const [playlistName, setPlaylistName] = useState(initialPlaylistName || generatePlaylistName);
 
   // prepare initial playlist load, skip if for example the code is run serverside. 
@@ -56,24 +55,30 @@ export default function Walk(props) {
   if (playlistName !== null && playlistName !== undefined) {
     playlistData = createPlaylist(listData);
   }
-
+ let friends;
   if (viewMode == "view") {
-    return (
+    friends =
       <>
-        <PlayerWithPlaylist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} />
+        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
       </>
-    )
   } else if (viewMode == "recomm") {
-    return (
+    friends =
       <>
-        <ListContents listcontentsdata={recommData} playlistName={playlistName} position={position} />
-        <PlayerWithPlaylist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} />
-      </>)
-  } else {
-    return (
-      "Wrong Viewmode '" + viewMode + "'"
-    )
-  };
+        <ListContents listcontentsdata={recommData} playlistName={playlistName} focusPosition={focusPosition} />
+        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+      </>
+  }
+
+  return (
+    <>
+      <div id="PlaylistAndFriends" className="w-full flex flex-1 overflow-none">
+        <div id="Friends" className="flex-auto items-stretch">
+          {friends}
+        </div>
+        <Playlist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+      </div>
+    </>
+  )
 
   function changeToRecommMode(position, listData) {
     setViewMode("recomm");

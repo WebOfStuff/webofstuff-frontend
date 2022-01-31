@@ -3,13 +3,12 @@ import videojs from "video.js";
 import { getPlaylistCookie, createPlaylistCookie } from '../Session/PlaylistCookies';
 import startNewPlaylist from '../../pages/[playlistName]';
 
-export function Playlist(player) {
-  const playlistName = player.playlistName;
-  const playerModule = player.player;
-  const playlistData = player.playlistData;
-  const changeToRecommMode = player.changeToRecommMode;
+export function Playlist(props) {
+
+  let { playlistName, playlistData, changeToRecommMode, focusPosition } = props;
+  // Komisch, darf nicht in Zeile oben entpackt werden: WeakMap key must be an object, got elem. Vllt muss es Const sein. TODO: Erforschen.
+  const playerModule = videojs.getPlayer("player");
   let options = { horizontal: false, supportsCssPointerEvents: true };
-  let wrapperClassnames = findWrapperClassnames(["vjs-playlist w-1/6"]);
 
   let listItems;
   if (playlistData !== undefined) {
@@ -17,7 +16,7 @@ export function Playlist(player) {
       let position = index + 1;
       let itemKey = playlistItem.id;
       return (
-        <PlaylistItem key={itemKey} playlistName={playlistName} playlistItem={playlistItem} position={position} changeToRecommMode= {changeToRecommMode} playlistData = {playlistData} playOnSelect></PlaylistItem>
+        <PlaylistItem key={itemKey} playlistName={playlistName} playlistItem={playlistItem} position={position} changeToRecommMode={changeToRecommMode} playlistData={playlistData} focusPosition={focusPosition} playOnSelect></PlaylistItem>
       )
     });
   } else {
@@ -26,50 +25,19 @@ export function Playlist(player) {
 
   return (
     <>
-      <div id="PlaylistWrapper" className={wrapperClassnames}>
-        <ol className="vjs-playlist-item-list">
-          <PlaylistItem key="first" specialLocation="first" position="1" playlistData = {playlistData} changeToRecommMode={changeToRecommMode}></PlaylistItem>
-          {listItems}
-          <PlaylistItem key="last" specialLocation="last" position={playlistData.length + 1} playlistData = {playlistData} changeToRecommMode={changeToRecommMode}></PlaylistItem>
-        </ol>
-      </div>
+      <ol id="Playlist" className="w-1/6 flex-none relative p-0 -top-[5vh]">
+        <PlaylistItem key="first" specialLocation="first" position="1" playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>
+        {listItems}
+        <PlaylistItem key="last" specialLocation="last" position={playlistData.length + 1} playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>
+      </ol>
     </>
   );
-
-
-  function findWrapperClassnames(classes) {
-    if (options.horizontal) {
-      classes.push('vjs-playlist-horizontal');
-    } else {
-      classes.push('vjs-playlist-vertical');
-    }
-    if (options.supportsCssPointerEvents) {
-      classes.push('vjs-csspointerevents');
-    }
-    if (!videojs.browser.TOUCH_ENABLED) {
-      classes.push('vjs-mouse');
-    }
-
-    videojs.on(playerModule, 'adstart', () => {
-      classes.addClass('vjs-ad-playing');
-    });
-
-    videojs.on(playerModule, 'adend', () => {
-      classes.removeClass('vjs-ad-playing');
-    });
-
-    let wrapperClassnames;
-    classes.forEach(className => wrapperClassnames += " " + className);
-    return wrapperClassnames;
-  }
 }
 
 export function findPlaylistName(session) {
   let playlistNode;
   let playlistCookie = getPlaylistCookie();
   let cookied = (playlistCookie == null) ? false : true;
- 
-
   if (session !== undefined && session !== null) {
     playlistNode = session.user.email;
   } else if (cookied) {
