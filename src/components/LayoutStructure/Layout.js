@@ -4,7 +4,7 @@ import BottomMenu from "./BottomMenu";
 
 export default function Layout ({ children }) {
   return ( 
-    <div id="website" className="h-screen overflow-hidden">
+    <div id="website" className="bg-base-100 text-base-content h-screen overflow-hidden">
         <TopMenu />
       <div id="contentarea" className="h-[90vh] flex flex-row w-full">
         <div id="leftmenu" className="w-[10vw]">

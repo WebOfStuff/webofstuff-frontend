@@ -2,6 +2,7 @@ import { PlaylistItem } from "./PlaylistItem";
 import videojs from "video.js";
 import { getPlaylistCookie, createPlaylistCookie } from '../Session/PlaylistCookies';
 import startNewPlaylist from '../../pages/[playlistName]';
+import { PlaylistItemBuffer } from "./PlaylistItemBuffer";
 
 export function Playlist(props) {
 
@@ -12,11 +13,10 @@ export function Playlist(props) {
 
   let listItems;
   if (playlistData !== undefined) {
-    listItems = playlistData.map((playlistItem, index) => {
-      let position = index + 1;
-      let itemKey = playlistItem.id;
+    listItems = playlistData.map((item, index) => {
+      let itemKey = item.id+index.toString();
       return (
-        <PlaylistItem key={itemKey} playlistName={playlistName} playlistItem={playlistItem} position={position} changeToRecommMode={changeToRecommMode} playlistData={playlistData} focusPosition={focusPosition} playOnSelect></PlaylistItem>
+        <PlaylistItem key={itemKey} playlistName={playlistName} playlistData={playlistData} position={index+1} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} playOnSelect></PlaylistItem>
       )
     });
   } else {
@@ -25,10 +25,10 @@ export function Playlist(props) {
 
   return (
     <>
-      <ol id="Playlist" className="relative p-0 -top-[5vh]">
-        <PlaylistItem key="first" specialLocation="first" position="1" playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>
+      <ol id="Playlist" className="relative p-0">
+        <PlaylistItemBuffer key="first" specialLocation="first" position="1" playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItemBuffer>
         {listItems}
-        <PlaylistItem key="last" specialLocation="last" position={playlistData.length + 1} playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItem>
+        <PlaylistItemBuffer key="last" specialLocation="last" position={playlistData.length + 1} playlistData={playlistData} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition}></PlaylistItemBuffer>
       </ol>
     </>
   );

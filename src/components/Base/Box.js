@@ -3,7 +3,7 @@ import React from 'react';
 
 export default function Box(props)  {
 
-  let className = props.className + " card shadow-2xl"
+  let className = props.className + ""
 
   return (
     <>

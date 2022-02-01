@@ -1,4 +1,4 @@
-import { React, useState } from 'react';
+import { React, useEffect, useState } from 'react';
 import Player from '../components/Video/Player';
 import { useQuery, useManualQuery, useMutation } from 'graphql-hooks'
 import { useSession } from "next-auth/react"
@@ -19,9 +19,8 @@ export default function Walk(props) {
   let { playlistName: initialPlaylistName, pos, view, edit } = router.query;
   const [viewMode, setViewMode] = useState(view || "view");
   const [editMode, setEditMode] = useState(edit || "true");
-  const [focusPosition, setPosition] = useState(pos || 1);
+  const [focusPosition, setPosition] = useState(pos || 0);
   const [playlistName, setPlaylistName] = useState(initialPlaylistName || generatePlaylistName);
-
   // prepare initial playlist load, skip if for example the code is run serverside. 
   // TODO: Check whether skip is necessary, since the Node is a required URL parameter 
   const { loading: listLoading, error: listError, data: listData, refetch: listRefetch } = useQuery(listQuery, {
@@ -52,27 +51,22 @@ export default function Walk(props) {
   }
   */
 
-  let playlistData = [];
-  if (playlistName !== null && playlistName !== undefined) {
-    playlistData = createPlaylist(listData);
+  let playlistData = createPlaylist(listData);
+  if (focusPosition == 0) {
+    setPosition(playlistData.length+1)
   }
+
   let friends;
   if (viewMode == "view") {
     friends =
       <>
-        <Box>
-          <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
-        </Box>
+        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
       </>
   } else if (viewMode == "recomm") {
     friends =
       <>
-        <Box>  
-          <ListContents listcontentsdata={recommData} playlistName={playlistName} focusPosition={focusPosition} />
-        </Box>
-        <Box>
-          <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
-        </Box>
+        <ListContents listcontentsdata={recommData} playlistName={playlistName} focusPosition={focusPosition} />
+        <Player playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
       </>
   }
 
@@ -83,7 +77,7 @@ export default function Walk(props) {
           {friends}
         </div>
         <Box className="flex-none w-1/6 overflow-visible">
-        <Playlist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
+          <Playlist playlistData={playlistData} playlistName={playlistName} changeToRecommMode={changeToRecommMode} focusPosition={focusPosition} />
         </Box>
       </div>
     </>

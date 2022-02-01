@@ -2,6 +2,7 @@ import React from 'react';
 import { addQuery, getAddVariables } from '../../lib/gqlqueries';
 import { useMutation } from 'graphql-hooks'
 import Button from '../Base/Button';
+import Box from '../Base/Box';
 
 export default function ListContents(props) {
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
@@ -32,20 +33,23 @@ export default function ListContents(props) {
 
   return (
     <>
-      <div id="recomm" className="overflow-x-auto">
-        <table id="recomm-item" algorithm={algorithm} className="table w-full table-zebra">
-          <thead>
-            <tr>
-              <th></th>
-              <th>Titel</th>
-            </tr>
-          </thead>
-          <tbody>
-            {listItems}
-          </tbody>
-        </table>
-      </div>
+      <Box>
+        <div id="recomm" className="overflow-x-auto">
+          <table id="recomm-item" algorithm={algorithm} className="table table-zebra w-full">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Titel</th>
+              </tr>
+            </thead>
+            <tbody>
+              {listItems}
+            </tbody>
+          </table>
+        </div>
+      </Box>
     </>
+
   )
 
   function addItem(playlistName, position, id) {
