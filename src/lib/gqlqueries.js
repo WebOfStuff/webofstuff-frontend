@@ -8,7 +8,7 @@ export const listQuery = `#graphql
         edges {
           position
           node {
-            title
+            name
             youtubeid
           }
         }
@@ -37,7 +37,7 @@ export const recommQuery = `#graphql
   query getRecommendation{  
     contents {
       id
-      title
+      name
     }
   }
 `

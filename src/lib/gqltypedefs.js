@@ -2,22 +2,44 @@
 export default function getTypeDefs() {
   const typeDefs = `#graphql
   type Content {
-    id: String
-    title: String
+    id: String!
+    name: String!
     youtubeid: String
     playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")
+    labels: [Label] @relationship(type: "IS_A", direction: IN, properties: "ContentLabels")
   }
 
   type Playlist {
-    name: String
+    id: String!
+    name: String!
     editmode: String
     contents: [Content] @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistContents")
     personas: [Persona] @relationship(type: "CONNECTED_TO", direction: OUT, properties: "PlaylistPersonas")
   }
+
+  type User {
+    id: String!
+    name: String!
+    personas: [Persona] @relationship(type: "HAS_A", direction: IN, properties: "UserPersonas")
+    }
   
   type Persona {
-    name: String
+    id: String!
+    name: String!
+    user: User! @relationship(type: "HAS_A", direction: IN, properties: "UserPersonas")
     playlists: [Playlist] @relationship(type: "CONNECTED_TO", direction: IN, properties: "PlaylistPersonas")
+  }
+
+  type Label {
+    id: String!
+    name: String!
+    contents: [Content] @relationship(type: "IS_A", direction: OUT, properties: "ContentLabels")
+  }
+
+  interface ContentLabels @relationshipProperties {
+  """  votedUpBy: [String!] 
+    votedDownBy: [String!]  """  
+    percentage: String
   }
 
   interface PlaylistPersonas @relationshipProperties {
@@ -26,6 +48,10 @@ export default function getTypeDefs() {
 
   interface PlaylistContents @relationshipProperties {
     position: Int
+  }
+
+  interface UserPersonas @relationshipProperties {
+    favorite: Boolean
   }
 
   type Mutation {
@@ -44,10 +70,10 @@ export default function getTypeDefs() {
     downtickHigherPositions(playlistName: String!, position: Int!): Playlist
         @cypher(
             statement: """
-            MATCH (:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
+            MATCH (p:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
             WHERE r.position > $position
             SET r.position = r.position - 1 
-            RETURN r 
+            RETURN p 
             """
         )
   }
@@ -56,10 +82,10 @@ export default function getTypeDefs() {
     uptickPlaylistStartingAtPosition(playlistName: String!, position: Int!): Playlist
         @cypher(
             statement: """
-            MATCH (:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
+            MATCH (p:Playlist {name:$playlistName})-[r:INCLUDED_IN]-(:Content)
             WHERE r.position >= $position
             SET r.position = r.position + 1 
-            RETURN r 
+            RETURN p
             """
         )
   }

@@ -1,23 +1,27 @@
 import React from 'react';
-import { addQuery, getAddVariables } from '../../lib/gqlqueries';
-import { useMutation } from 'graphql-hooks'
-import Button from '../Base/Button';
+import { recommQuery, getRecommVariables, addQuery, getAddVariables } from '../../lib/gqlqueries';
+import { useMutation, useQuery } from 'graphql-hooks'
+import Icon from '../Base/Icon';
 import Box from '../Base/Box';
 
-export default function ListContents(props) {
+
+export default function Recommendations(props) {
+  let { recommData, playlistData, playlistName, focusPosition, setFocusPosition } = props
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
-  let { playlistName, focusPosition, listcontentsdata } = props
-  let contents = listcontentsdata.contents;
-  let algorithm = "normal"
-  let listItems;
-  if (contents !== undefined) {
+  if (recommData !== undefined) {
+    let contents = recommData.contents;
+    let algorithm = "normal"
+    let listItems;
+
     listItems = contents.map((item, index) =>
       <>
         <tr key={item.id}>
           <th>
-            <Button className="h-[5vh] w-[5vh] z-20 relative left-1/6" src="/assets/add.svg" value={item.id} onClick={() => addItem(playlistName, focusPosition, item.id)}></Button>
+            <a onClick={(event) => addItem(playlistName, focusPosition, item.id)} className="">
+              <Icon shape="add" circle={true} circleClass="success" strokeClass="neutral" className="h-[5vh] w-[5vh] z-20 relative left-1/4 stroke-current inline-block"></Icon>
+            </a>
           </th>
-          <td>{item.title}</td>
+          <td>{item.name}</td>
         </tr>
       </>
     );
@@ -55,6 +59,8 @@ export default function ListContents(props) {
   function addItem(playlistName, position, id) {
     let addVariables = getAddVariables(playlistName, position, id);
     sendAdd({ variables: addVariables })
+    setFocusPosition(focusPosition)
   }
 
 }
+

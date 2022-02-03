@@ -2,8 +2,8 @@ import {useCallback, useRef } from 'react';
 
 export function useHover(hoverFunction, hoverOutFunction) {
   // Wrap in useCallback so we can use in dependencies below
-  const handleMouseOver = useCallback(() => hoverFunction(), []);
-  const handleMouseOut = useCallback(() => hoverOutFunction(), []);
+  const handleMouseOver = useCallback(() => hoverFunction(), [hoverFunction]);
+  const handleMouseOut = useCallback(() => hoverOutFunction(), [hoverOutFunction]);
 
   // Keep track of the last node passed to callbackRef
   // so we can remove its event listeners.
