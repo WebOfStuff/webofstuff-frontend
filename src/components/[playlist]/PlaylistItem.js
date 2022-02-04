@@ -38,11 +38,11 @@ export function PlaylistItem(props) {
         onClick={(event) => switchPlaylistItem_(event)}
         onKeyDown={() => handleKeyDown_()}>
         <div id="TopHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, getRecommData, playlistPosition, playlistData, playlistName, focusPosition, setFocusPosition, setViewMode) }} >
+          <a onClick={(event) => { changeToRecommMode(event, playlistPosition, props) }} >
             <Icon id='vjs-playlist-item-buttons-add-icon-top' shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className={addButtonClassnameTop} ></Icon>
           </a>
-          <a onClick={(event) => deleteItem(event, playlistName, playlistPosition)}>
+          <a onClick={(event) => deleteItem(event, props)}>
             <Icon id='vjs-playlist-item-buttons-add-icon-delete' shape="delete" circle={true} circleClass="error" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 translate-y-[50%]" ></Icon>
           </a>
@@ -51,11 +51,11 @@ export function PlaylistItem(props) {
           </div>
         </div>
         <div id="BottomHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, getRecommData, nextPlaylistPosition, playlistData, playlistName, focusPosition, setFocusPosition, setViewMode) }}  >
+          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, props) }}  >
             <Icon id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 top-full -translate-x-1/2 -translate-y-1/2"></Icon>
           </a>
-          <a onClick={(event) => deleteItem(event, playlistName, playlistPosition)} >
+          <a onClick={(event) => deleteItem(event, props)} >
             <Icon id="vjs-playlist-item-buttons-delete-icon-bottom" shape="delete" circle={true} circleClass="error" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 bottom-1/2"></Icon>
           </a>
@@ -64,21 +64,23 @@ export function PlaylistItem(props) {
     </>
   )
 
-  function changeToRecommMode(event, getRecommData, playlistPosition, playlistData, playlistName, focusPosition, setFocusPosition, setViewMode) {
+  function changeToRecommMode(event, position, props) {
+    let {getRecommData, playlistData, playlistName, setFocusPosition, setViewMode} = props;
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
-      let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, playlistPosition) })
-      setFocusPosition(playlistPosition);
+      let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, position) })
+      setFocusPosition(position);
       setViewMode("recomm");
     }
   }
 
-  function deleteItem(event, playlistName, playlistPosition) {
+  function deleteItem(event, props) {
+    let {playlistName, playlistPosition}= props;
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
       sendDelete({ variables: getDeleteVariables(playlistName, playlistPosition) });
       switchPlaylistItem_(event, "next")
-      setFocusPosition(playlistPosition)
+      setFocusPosition(playlistPosition-1)
     }
   }
 

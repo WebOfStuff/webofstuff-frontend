@@ -99,7 +99,7 @@ export default function Walk(props) {
   return (
     <>
       <div id="PlaylistAndFriends" className="flex flex-row">
-        <div id="Friends" className="flex flex-col w-full">
+        <div id="Friends" className="flex flex-col w-full pr-2">
           {panels}
         </div>
         <Playlist

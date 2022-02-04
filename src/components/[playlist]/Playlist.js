@@ -5,54 +5,33 @@ import startNewPlaylist from '../../pages/[playlistName]';
 import { PlaylistItemBuffer } from "./PlaylistItemBuffer";
 
 export function Playlist(props) {
-  let {playlistName, playlistData, className, getRecommData, focusPosition, setFocusPosition, setViewMode } = props;
+  let { playlistName, playlistData, className, getRecommData, focusPosition, setFocusPosition, setViewMode } = props;
 
   let listItems;
   if (playlistData !== undefined) {
     listItems = playlistData.map((item, index) => {
       let itemKey = item.id + index.toString();
       return (
-        <PlaylistItem
-          key={itemKey}
-          playlistName={playlistName}
-          playlistData={playlistData}
-          playlistPosition={index + 1}
-          focusPosition={focusPosition}
-          setFocusPosition={setFocusPosition}
-          setViewMode={setViewMode}
-          getRecommData={getRecommData}
-        />
+        <PlaylistItem {...props} key={itemKey} playlistPosition={index + 1} />
       )
     });
-  } 
+  }
 
   return (
     <>
-      <ol id="Playlist" className={className}>
-        <PlaylistItemBuffer
-          key="first"
-          specialLocation="first"
-          playlistName={playlistName}
-          playlistData={playlistData}
-          playlistPosition="1"
-          getRecommData={getRecommData} 
-          focusPosition={focusPosition}
-          setFocusPosition={setFocusPosition}
-          setViewMode={setViewMode}
-          />
-        {listItems}
-        <PlaylistItemBuffer
-          key="last"
-          specialLocation="last"
-          playlistName={playlistName}
-          playlistData={playlistData}
-          playlistPosition={playlistData.length + 1} 
-          getRecommData={getRecommData} 
-          focusPosition={focusPosition}
-          setFocusPosition={setFocusPosition}
-          setViewMode={setViewMode}
-          />
-      </ol>
+      <div id="playlistWrapper" className={className}>
+        <div class="form-control">
+          <div class="flex space-x-2">
+            <input type="text" placeholder={playlistName} class="w-full input input-primary" />
+            <button class="btn btn-tertiary">Reload</button>
+          </div>
+        </div>
+        <ol id="Playlist">
+          <PlaylistItemBuffer {...props} key="first" specialLocation="first" playlistPosition="1" />
+          {listItems}
+          <PlaylistItemBuffer {...props} key="last" specialLocation="last" playlistPosition={playlistData.length + 1} />
+        </ol>
+      </div>
     </>
   );
 }

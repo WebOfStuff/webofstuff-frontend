@@ -59,7 +59,8 @@ export default function Recommendations(props) {
   function addItem(playlistName, position, id) {
     let addVariables = getAddVariables(playlistName, position, id);
     sendAdd({ variables: addVariables })
-    setFocusPosition(focusPosition)
+    //TODO: should do +1 needs to be limited to success
+    setFocusPosition(position)
   }
 
 }
