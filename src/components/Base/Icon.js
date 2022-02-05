@@ -1,20 +1,40 @@
 import Image from "next/image";
+import { useLayoutEffect, useState } from "react";
+
 
 
 export default function Icon(props) {
-  let { id, className, circle, shape, strokeClass, circleClass } = props;
+  let { id, className, circle, shape } = props;
+  const { theme, strokeClass, circleClass } = props;
   className += " inline-block overflow-visible h-[5vh] w-[5vh] z-20 relative"
-  let curve = shapes[shape]
-  let theme = localStorage.theme
-  let themestring = "[data-theme=" + theme + "]"
-  const themes = require('daisyui/colors/themes');
-  let circleColor = themes[themestring][circleClass]
-  let strokeColor = themes[themestring][strokeClass]
+  const [curve, setCurve] = useState(shapes[shape]);
+  const [circleColor, setCircleColor] = useState("black");
+  const [strokeColor, setStrokeColor] = useState("white");
+
+  useLayoutEffect(() => {
+    if (theme !== null && theme !== undefined) {
+      let { strokeClass } = props
+      let themestring = "[data-theme=" + theme + "]"
+      const themes = require('daisyui/colors/themes');
+      setStrokeColor(themes[themestring][strokeClass])
+    }
+  }, [theme, strokeClass]);
+  useLayoutEffect(() => {
+    if (theme !== null && theme !== undefined) {
+      let { circleClass } = props
+      let themestring = "[data-theme=" + theme + "]"
+      const themes = require('daisyui/colors/themes');
+      setCircleColor(themes[themestring][circleClass])
+    }
+  }, [theme, circleClass]);
+
+
+
 
   //let circleColor, strokeColor;
   return (
     <>
-      <svg id= {id} xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 50 50">
+      <svg id={id} xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 50 50">
         {circle && <circle cx="50%" cy="50%" r="50%" fill={circleColor} strokeLinecap="round" strokeLinejoin="round" strokeWidth="{2}" className="text-neutral" />}
         {/* <g transform="translate(10,10)">
          <path className="translate-x-1/4 translate-y-1/4" stroke={strokeColor} strokeLinecap="round" strokeLinejoin="round" strokeWidth="{2}" d={curve} />

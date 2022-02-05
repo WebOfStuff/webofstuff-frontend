@@ -13,6 +13,7 @@ export default function Player(props) {
     setVideoEl(el)
   }, [])
   const [gotPlayer, setGotPlayer] = useState(false)
+  const [positionPlaying, setPositionPlaying ] = useState(position)
 
   useEffect(() => {
     if (videoEl == null) return
@@ -32,12 +33,11 @@ export default function Player(props) {
 
   useEffect(() => {
     if (gotPlayer) {
-      let { position } = props
-      let index = position - 1
+      let index = positionPlaying - 1
       player = videojs.getPlayer(playerName)
       player.playlist(playlistData, index);
     }
-  }, [gotPlayer, playlistData, position]);
+  }, [gotPlayer, playlistData, position, playerName, positionPlaying]);
 
 
   return (

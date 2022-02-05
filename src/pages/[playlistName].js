@@ -12,6 +12,7 @@ import { recommQuery, listQuery, getListVariables, addQuery, deleteQuery, saveQu
 
 
 export default function Walk(props) {
+  const {theme, setTheme} = props;
   // use Session if it exists
   const { data: session, status } = useSession();
 
@@ -90,7 +91,7 @@ export default function Walk(props) {
   */
 
   if (playlistData == []) {
-    setPlaylistData();
+    setPlaylistData(createPlaylist(listData));
   }
   if (focusPosition == 0) {
     setFocusPosition(playlistData.length + 1)
@@ -109,7 +110,9 @@ export default function Walk(props) {
           getRecommData={getRecommData}
           focusPosition={focusPosition}
           setFocusPosition={setFocusPosition}
-          setViewMode={setViewMode} />
+          setViewMode={setViewMode} 
+          theme={theme}
+          setTheme={setTheme}/>
       </div>
     </>
   )

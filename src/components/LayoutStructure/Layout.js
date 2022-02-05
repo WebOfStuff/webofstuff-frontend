@@ -1,8 +1,10 @@
 import LeftMenu from "./LeftMenu";
 import TopMenu from "./TopMenu";
 import BottomMenu from "./BottomMenu";
+import React, { useState } from "react";
 
 export default function Layout ({ children }) {
+
   return ( 
     <div id="website" className="bg-base-100 text-base-content h-screen overflow-hidden">
         <TopMenu />
@@ -11,7 +13,7 @@ export default function Layout ({ children }) {
           <LeftMenu />
         </div>
         <div id="content" className="w-[90vw]">
-          {children}
+        {children}
         </div>
       </div>
       <div id="bottommenu" className="h-[5vh] w-full">

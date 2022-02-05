@@ -1,20 +1,33 @@
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react"
 
-export function ThemeChanger(props) {
-  const [theme, setTheme] = useState("light");
+export function Changer(props) {
+  const { data: session, status } = useSession()
+  const varToString = varObj => Object.keys(varObj)[0]
+  const stateName= varToString(state)
+
+  useEffect(async() => {
+    if (session) {
+      props.setState(session?.user?.currentPersona)
+      setStateInDB(session?.user?.email, props.state)
+    }
+  }, [session, props.setState]);
+
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+    if (stateName = "Theme"){
+    document.documentElement.setAttribute("data-theme", props.theme);
+    localStorage.setItem("theme", props.theme);
+    }
+  }, [props.state]);
 
-  let themes = [
+  let states = [
     "light",
     "black",
     "cupcake",
     "bumblebee",
     "emerald",
     "corporate",
-    "synthwave", 
+    "synthwave",
     "cyberpunk",
     "valentine",
     "halloween",
@@ -24,17 +37,19 @@ export function ThemeChanger(props) {
     "pastel",
     "wireframe",
   ]
-  let icons = ["🌝","🏴", "🧁", "🐝", "✳️", "🏢", "🌃 ", "🤖", "🌸", "🎃", "🌷", "🌲", "🐟", "👓", "🖍 ", ];
+
+
+  
+  let icons = ["🌝", "🏴", "🧁", "🐝", "✳️", "🏢", "🌃 ", "🤖", "🌸", "🎃", "🌷", "🌲", "🐟", "👓", "🖍 ",];
 
   let themesList = themes.map((themeInList, index) => {
-    let className=""
-    if (themeInList == theme) {
-      className="active";
+    let className = ""
+    if (themeInList == props.theme) {
+      className = "active";
     }
-
     return (
       <li key={themeInList} >
-        <a className={className} tabIndex="0" onClick={() => setTheme(themeInList, index)}>{icons[index]} {themeInList}</a>
+        <a className={className} tabIndex="0" onClick={(e) => { props.setState(themeInList); setStateInDB(session?.user?.email, themeInList) }}>{icons[index]} {themeInList}</a>
       </li>
     )
   });
@@ -48,7 +63,7 @@ export function ThemeChanger(props) {
           </svg>
           <span className="hidden md:inline">
             THEME
-          </span> <svg xmlns="http://www.w3.org/2000/svg" fill="none"  viewBox="0 0 1792 1792" className="inline-block w-5 mr-2 stroke-current">
+          </span> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 1792 1792" className="inline-block w-5 mr-2 stroke-current">
             <path d="M1395 736q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23z">
             </path></svg></div>
         <div className="mt-[3vh] overflow-y-auto shadow-2xl top-px dropdown-content h-96 w-52 rounded-b-box bg-base-200 text-base-content">
@@ -60,3 +75,10 @@ export function ThemeChanger(props) {
     </>
   )
 }
+
+const setThemeInDB = async (email, theme) => {
+  const user = await fetch('/api/user/update?email='+email, {
+    method: 'post',
+    body: JSON.stringify({currentTheme: theme}),
+  })
+};

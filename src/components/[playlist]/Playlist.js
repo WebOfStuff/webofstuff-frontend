@@ -5,7 +5,7 @@ import startNewPlaylist from '../../pages/[playlistName]';
 import { PlaylistItemBuffer } from "./PlaylistItemBuffer";
 
 export function Playlist(props) {
-  let { playlistName, playlistData, className, getRecommData, focusPosition, setFocusPosition, setViewMode } = props;
+  let { theme, setTheme, playlistName, playlistData, className, getRecommData, focusPosition, setFocusPosition, setViewMode } = props;
 
   let listItems;
   if (playlistData !== undefined) {
@@ -20,10 +20,10 @@ export function Playlist(props) {
   return (
     <>
       <div id="playlistWrapper" className={className}>
-        <div class="form-control">
-          <div class="flex space-x-2">
-            <input type="text" placeholder={playlistName} class="w-full input input-primary" />
-            <button class="btn btn-tertiary">Reload</button>
+        <div className="form-control">
+          <div className="flex space-x-2">
+            <input type="text" placeholder={playlistName} className="w-full input input-primary" />
+            <button className="btn btn-tertiary">Reload</button>
           </div>
         </div>
         <ol id="Playlist">

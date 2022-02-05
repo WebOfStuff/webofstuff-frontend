@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth'
+import { getToken } from "next-auth/jwt"
 import GoogleProvider from 'next-auth/providers/google'
 import { PrismaClient } from "@prisma/client"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
@@ -15,6 +16,8 @@ if (process.env.NODE_ENV === "production") {
   prisma = global.prisma
 }
 
+const secret = process.env.NEXTAUTH_SECRET
+
 export default NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -24,5 +27,16 @@ export default NextAuth({
       clientSecret: process.env.GOOGLE_SECRET
     }),
   ],
-  secret: process.env.HASH_SECRET
+  secret: process.env.HASH_SECRET,
+  session: {
+    strategy: "database",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  callbacks: {
+    async session({ session, token, user }) { 
+      session.user.currentTheme = user.currentTheme
+      console.log(session)
+      return session;
+    },
+  }
 })

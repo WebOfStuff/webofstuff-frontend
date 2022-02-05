@@ -6,7 +6,7 @@ import { getRecommVariables } from "../../lib/gqlqueries"
 
 
 export function PlaylistItemBuffer(props) {
-  const {specialLocation, playlistData, getRecommData, playlistPosition, playlistName, focusPosition, setFocusPosition, setViewMode} = props;
+  const {theme, setTheme, specialLocation, playlistData, getRecommData, playlistPosition, playlistName, focusPosition, setFocusPosition, setViewMode} = props;
   let itemButtonsClassname = "group h-[5vh] w-full z-10 block";
   let addButtonVisible = "invisible ";
   if (focusPosition == playlistPosition) {
@@ -21,7 +21,7 @@ export function PlaylistItemBuffer(props) {
       <li className='buffer' >
         <div className={itemButtonsClassname} 
         onClick={(event) => changeToRecommMode(event, getRecommData, playlistPosition, playlistData, playlistName,focusPosition, setFocusPosition, setViewMode)}>
-          <Icon id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral" className={specialLocation == "last" ? addButtonClassnameTop : addButtonClassnameBottom}/>
+          <Icon {...props} id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral" className={specialLocation == "last" ? addButtonClassnameTop : addButtonClassnameBottom}/>
         </div>
       </li>
     </>

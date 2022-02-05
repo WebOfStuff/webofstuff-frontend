@@ -8,7 +8,7 @@ import { deleteQuery, getDeleteVariables, getRecommVariables } from "../../lib/g
 
 export function PlaylistItem(props) {
   const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
-  let { playlistData, showDescription, getRecommData, playlistPosition, playlistName, focusPosition, setFocusPosition, setViewMode } = props
+  let { playlistData, playlistPosition, setViewMode } = props
   let index = playlistPosition - 1
   let nextPlaylistPosition = playlistPosition + 1;
 
@@ -19,7 +19,7 @@ export function PlaylistItem(props) {
 
   useLayoutEffect(() => {
     setPlaylistItemData(playlistData[index]) 
-  }, [playlistData]
+  }, [playlistData, index]
   )
 
   useLayoutEffect(() => {
@@ -39,11 +39,11 @@ export function PlaylistItem(props) {
         onKeyDown={() => handleKeyDown_()}>
         <div id="TopHalf" className="group h-[5vh] w-full z-10 block">
           <a onClick={(event) => { changeToRecommMode(event, playlistPosition, props) }} >
-            <Icon id='vjs-playlist-item-buttons-add-icon-top' shape="add" circle={true} circleClass="success" strokeClass="neutral"
+            <Icon {...props}  id='vjs-playlist-item-buttons-add-icon-top' shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className={addButtonClassnameTop} ></Icon>
           </a>
           <a onClick={(event) => deleteItem(event, props)}>
-            <Icon id='vjs-playlist-item-buttons-add-icon-delete' shape="delete" circle={true} circleClass="error" strokeClass="neutral"
+            <Icon {...props}  id='vjs-playlist-item-buttons-add-icon-delete' shape="delete" circle={true} circleClass="error" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 translate-y-[50%]" ></Icon>
           </a>
           <div id="titleContainer" className="absolute bottom-1/2 w-full translate-x-[5%] translate-y-[50%]">
@@ -52,11 +52,11 @@ export function PlaylistItem(props) {
         </div>
         <div id="BottomHalf" className="group h-[5vh] w-full z-10 block">
           <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, props) }}  >
-            <Icon id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
+            <Icon {...props} id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 top-full -translate-x-1/2 -translate-y-1/2"></Icon>
           </a>
           <a onClick={(event) => deleteItem(event, props)} >
-            <Icon id="vjs-playlist-item-buttons-delete-icon-bottom" shape="delete" circle={true} circleClass="error" strokeClass="neutral"
+            <Icon {...props}  id="vjs-playlist-item-buttons-delete-icon-bottom" shape="delete" circle={true} circleClass="error" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 bottom-1/2"></Icon>
           </a>
         </div>
