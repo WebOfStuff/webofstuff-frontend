@@ -1,18 +1,29 @@
-import React, { useEffect, useContext} from "react";
-import { useTheme, themes, icons } from "./theme-context";
+import React, { useEffect, useContext } from "react";
+import { useTheme, themes, icons } from "./ThemeContext";
 import { useSession } from "next-auth/react";
 
 
 export function ThemeChanger(props) {
   const { data: session, status } = useSession()
-  const {state: theme, dispatch: setTheme} = useTheme();
+  const { state: theme, dispatch: setTheme } = useTheme();
+  let currentPersona = session?.user?.currentPersona
 
-  useEffect(async() => {
-    if (session) {
-      setTheme(session?.user?.currentTheme)
-      setThemeInDB(session?.user?.email, theme)
+  useEffect(() => {
+    async function setThemeInDB(id, theme) {
+      const persona = await fetch('/api/persona/update?id=' + id, {
+        method: 'post',
+        body: JSON.stringify({ currentTheme: theme }),
+      })
     }
-  }, [session, setTheme]);
+    if (session) {
+      let currentPersona = session?.user?.currentPersona
+      setTheme(session?.user?.personas[currentPersona]?.currentTheme)
+      setThemeInDB(session?.user?.personas[currentPersona].id, theme);
+    }
+  }, [session, setTheme, theme]);
+
+
+
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -27,7 +38,7 @@ export function ThemeChanger(props) {
     }
     return (
       <li key={themeInList} >
-        <a className={className} tabIndex="0" onClick={(e) => {setTheme(themeInList); setThemeInDB(session?.user?.email, themeInList) }}>{icons[index]} {themeInList}</a>
+        <a className={className} tabIndex="0" onClick={(e) => { setTheme(themeInList); setThemeInDBOnClick(session?.user?.personas[currentPersona].id, themeInList) }}>{icons[index]} {themeInList}</a>
       </li>
     )
   });
@@ -54,9 +65,9 @@ export function ThemeChanger(props) {
   )
 }
 
-const setThemeInDB = async (email, theme) => {
-  const user = await fetch('/api/user/update?email='+email, {
+async function setThemeInDBOnClick(id, theme) {
+  const persona = await fetch('/api/persona/update?id=' + id, {
     method: 'post',
-    body: JSON.stringify({currentTheme: theme}),
+    body: JSON.stringify({ currentTheme: theme }),
   })
-};
+}

@@ -1,11 +1,11 @@
-import Image from "next/image";
-import { useLayoutEffect, useState } from "react";
 
+import { useLayoutEffect, useState } from "react";
+import { useTheme, themes, icons } from ".././themes/ThemeContext";
 
 
 export default function Icon(props) {
-  let { id, className, circle, shape } = props;
-  const { theme, strokeClass, circleClass } = props;
+  const { state: theme, dispatch: setTheme } = useTheme();
+  const { id, className, circle, shape, strokeClass, circleClass } = props;
   className += " inline-block overflow-visible h-[5vh] w-[5vh] z-20 relative"
   const [curve, setCurve] = useState(shapes[shape]);
   const [circleColor, setCircleColor] = useState("black");
@@ -13,7 +13,6 @@ export default function Icon(props) {
 
   useLayoutEffect(() => {
     if (theme !== null && theme !== undefined) {
-      let { strokeClass } = props
       let themestring = "[data-theme=" + theme + "]"
       const themes = require('daisyui/colors/themes');
       setStrokeColor(themes[themestring][strokeClass])
@@ -21,7 +20,6 @@ export default function Icon(props) {
   }, [theme, strokeClass]);
   useLayoutEffect(() => {
     if (theme !== null && theme !== undefined) {
-      let { circleClass } = props
       let themestring = "[data-theme=" + theme + "]"
       const themes = require('daisyui/colors/themes');
       setCircleColor(themes[themestring][circleClass])

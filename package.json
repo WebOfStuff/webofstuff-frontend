@@ -25,6 +25,7 @@
     "react-cookie-consent": "^6.4.1",
     "react-dom": "^17.0.2",
     "subscriptions-transport-ws": "^0.11.0",
+    "uuid": "^8.3.2",
     "video.js": "^7.17.0",
     "videojs-playlist": "^4.3.1",
     "videojs-playlist-ui": "file:./videojs-playlist-ui-3.9.8.tgz",

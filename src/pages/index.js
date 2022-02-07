@@ -8,7 +8,7 @@ export default function Home(props) {
   return (
     <div id="home2" className='flex flex-row w-[60vw]'>
       Hello World!
-      <Player playerName="Welcome" className="flex-initial w-100" position="1" playlistData={playlistData}  />
+      {/* <Player playerName="Welcome" className="flex-initial w-100" position="1" playlistData={playlistData}  /> */}
     </div>
   )
 }

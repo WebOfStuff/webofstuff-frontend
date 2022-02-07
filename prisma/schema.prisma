@@ -43,9 +43,9 @@ model User {
   emailVerified DateTime?
   image         String?
   currentPersona  String?
-  personas      Persona[]
+  personas      Persona[] @relation(fields: [name], references: [id])
   accounts      Account[]
-  sessions      Session[]
+  sessions      Session[] 
 }
 
 model Persona {
@@ -54,14 +54,14 @@ model Persona {
   image         String?
   currentPlaylist String?
   currentTheme  String?
-  themes        Theme[]
-  user          User[]
+  themes        Theme[] @relation(fields: [name,image,currentPlaylist,currentTheme], references: [id])
+  user          User[] @relation(fields: [name,image,currentPlaylist,currentTheme], references: [id])
 }
 
 model Theme {
   id            String    @id @default(cuid())
   name          String
-  personas      Persona[]
+  personas      Persona[] @relation(fields: [name], references: [id])
 }
 
 model VerificationToken {

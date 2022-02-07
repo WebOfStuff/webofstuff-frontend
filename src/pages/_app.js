@@ -5,8 +5,8 @@ import { SessionProvider } from "next-auth/react"
 import { GraphQLClient, ClientContext } from 'graphql-hooks'
 import React, { useState } from 'react';
 import { printIntrospectionSchema } from 'graphql'
-import { ThemeProvider } from '../components/themes/theme-context'
-import { PersonaContext } from '../components/personas/persona-context'
+import { ThemeProvider } from '../components/themes/ThemeContext'
+import { PersonaProvider } from '../components/personas/PersonaContext'
 
 const client = new GraphQLClient({
   url: '/api/graphql'
@@ -15,30 +15,16 @@ const client = new GraphQLClient({
 
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
-  const [theme, setTheme] = useState("light");
-  
-  //const [persona, setPersona] = useState("Main");
-
-/*   const personaContext = new PersonaContext({
-    persona = persona,
-    setPersona = setPersona,
-  }) */
-
-  /* const  ThemeContext() */
-//const themeContext = <ThemeContext></ThemeContext>
-
-
-
   return (
     <SessionProvider session={session}>
       <ClientContext.Provider value={client}>
-        {/* <PersonaContext.Provider persona={persona} setPersona={setPersona}> */}
+        <PersonaProvider>
           <ThemeProvider>
             <Layout>
               <Component {...pageProps} />
             </Layout>
           </ThemeProvider>
-       {/*  </PersonaContext.Provider> */}
+        </PersonaProvider>
       </ClientContext.Provider>
     </SessionProvider>
   )

@@ -3,10 +3,13 @@ import { recommQuery, getRecommVariables, addQuery, getAddVariables } from '../.
 import { useMutation, useQuery } from 'graphql-hooks'
 import Icon from '../Base/Icon';
 import Box from '../Base/Box';
-
+import { usePlaylistSetter,usePlaylistValues } from './PlaylistContext';
 
 export default function Recommendations(props) {
-  let { recommData, playlistData, playlistName, focusPosition, setFocusPosition } = props
+  
+  const { playlistName, focusPosition } = usePlaylistValues();
+  const { setFocusPosition} = usePlaylistSetter();
+  let { recommData} = props
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
   if (recommData !== undefined) {
     let contents = recommData.contents;

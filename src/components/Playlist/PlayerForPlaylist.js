@@ -3,10 +3,11 @@ import videojs, { player } from 'video.js';
 import 'videojs-youtube';
 import 'videojs-playlist';
 import { useEffect, useState, useCallback } from 'react';
-import { usePlaylistValues } from '../Playlist/PlaylistContext';
+import { usePlaylistValues } from './PlaylistContext';
 
 
-export default function Player(props) {
+export default function PlayerForPlaylist(props) {
+  const { playlistData } = usePlaylistValues()
   let { playerName, className, position } = props;
   let playerContainerId = playerName + "Container"
   const [videoEl, setVideoEl] = useState(null);
@@ -14,7 +15,7 @@ export default function Player(props) {
     setVideoEl(el)
   }, [])
   const [gotPlayer, setGotPlayer] = useState(false)
-  const [positionPlaying, setPositionPlaying ] = useState(position)
+  const [positionPlaying, setPositionPlaying] = useState(position)
 
   useEffect(() => {
     if (videoEl == null) return
@@ -30,6 +31,15 @@ export default function Player(props) {
       }
     }
   }, [props, videoEl]);
+
+
+  useEffect(() => {
+    if (gotPlayer) {
+      let index = positionPlaying - 1
+      player = videojs.getPlayer(playerName)
+      player.playlist(playlistData, index);
+    }
+  }, [gotPlayer, playlistData, position, playerName, positionPlaying]);
 
 
   return (

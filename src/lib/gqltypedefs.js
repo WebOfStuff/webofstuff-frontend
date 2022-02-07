@@ -6,7 +6,7 @@ export default function getTypeDefs() {
     name: String!
     youtubeid: String
     playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")
-    labels: [Label] @relationship(type: "IS_A", direction: IN, properties: "ContentLabels")
+    labels: [Label] @relationship(type: "IS", direction: IN, properties: "ContentLabels")
   }
 
   type Playlist {
@@ -17,28 +17,23 @@ export default function getTypeDefs() {
     personas: [Persona] @relationship(type: "CONNECTED_TO", direction: OUT, properties: "PlaylistPersonas")
   }
 
-  type User {
-    id: String!
-    name: String!
-    personas: [Persona] @relationship(type: "HAS_A", direction: IN, properties: "UserPersonas")
-    }
-  
+
   type Persona {
     id: String!
     name: String!
-    user: User! @relationship(type: "HAS_A", direction: IN, properties: "UserPersonas")
     playlists: [Playlist] @relationship(type: "CONNECTED_TO", direction: IN, properties: "PlaylistPersonas")
+    user: String!
   }
 
   type Label {
     id: String!
     name: String!
-    contents: [Content] @relationship(type: "IS_A", direction: OUT, properties: "ContentLabels")
+    contents: [Content] @relationship(type: "IS", direction: OUT, properties: "ContentLabels")
   }
 
   interface ContentLabels @relationshipProperties {
-  """  votedUpBy: [String!] 
-    votedDownBy: [String!]  """  
+    votedUpBy: [String] 
+    votedDownBy: [String]  
     percentage: String
   }
 
@@ -89,10 +84,20 @@ export default function getTypeDefs() {
             """
         )
   }
-
-
-
-
 `
   return typeDefs
 }
+
+/*  type Mutation {
+  CreatePersonas($input: [PersonaCreateInput!]!): Persona
+     createPersonas(input: $input) {
+    personas {
+    id
+    name
+    User
+    playlists() {
+      id
+      name
+    }
+  }
+}  */

@@ -9,7 +9,6 @@ export function getPlaylistCookie(){
   return jsId;
 }
 
-export function createPlaylistCookie() {
-  const sessionid = self.crypto.randomUUID();
-  document.cookie = "Playlist=" + sessionid+";path=/";
+export function createPlaylistCookie(playlistName) {
+  document.cookie = "Playlist="+playlistName;
 };

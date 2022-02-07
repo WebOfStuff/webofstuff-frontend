@@ -1,6 +1,5 @@
-
 export const listQuery = `#graphql
-  query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {  
+query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {
     playlists(where: $where) {
       name
       editmode
@@ -13,11 +12,9 @@ export const listQuery = `#graphql
           }
         }
       }
-  
       personas {
         name
       }
-  
       personasConnection {
         edges {
           role
@@ -28,10 +25,50 @@ export const listQuery = `#graphql
 `
 
 export function getListVariables(playlistName) {
-  const listVariables = { "where": { "name": playlistName }, "sort": [{ "edge": { "position": "ASC" } }] };
+  const listVariables = { 
+  "where": { "name": playlistName }, 
+  "sort": [{ "edge": { "position": "ASC" } }], 
+  }
   return listVariables
 };
 
+export const createPlaylistAndPersonaAndLinkThemQuery = `#graphql
+mutation CreatePersonas(input: $input){
+  createPersonas{
+    id
+    name
+    user
+    playlists() {
+      id
+      name
+    }
+  }
+}
+`
+
+export function getCreatePlaylistAndPersonaAndLinkThemVariables(playlistName, personaId, personaName, personaUser, personaPlaylistRole) {
+  const createPlaylistAndPersonaAndLinkThemVariables = { 
+ "input": [{
+      "id": personaId,
+      "name": personaName,
+      "user": personaUser,
+      "playlists": {
+        "create": [
+          {
+            "node": {
+              "name": playlistName,
+              "id": playlistId
+            },
+            "edge": {
+              "role": personaPlaylistRole
+            }
+          }
+        ]
+      }
+    }]
+  };
+  return createPlaylistAndPersonaAndLinkThemVariables;
+}
 
 export const recommQuery = `#graphql
   query getRecommendation{  
@@ -42,10 +79,10 @@ export const recommQuery = `#graphql
   }
 `
 
-export function getRecommVariables(playlistName) {
+ export function getRecommVariables(playlistName) {
   const listVariables = {};
   return listVariables
-};
+}; 
 
 export const addQuery = `#graphql
   mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $playlistName: String!, $position: Int!) {

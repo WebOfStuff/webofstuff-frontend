@@ -13,12 +13,13 @@ export default function Similarities(props) {
   let algorithm= {};
 
     listItems = contents.map((item, index) => {
+      let labels = item.labels;
       algorithm.id = "Normal"
       return (
         <>
           <tr key={algorithm.id}>
-            <th>{label.name}</th>
-            <td>{label.matches}</td>
+            <th>{item.label.name}</th>
+            <td>{item.label.matches}</td>
           </tr>
         </>)
     });

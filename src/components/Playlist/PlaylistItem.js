@@ -4,11 +4,14 @@ import Icon from "../Base/Icon";
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useMutation } from 'graphql-hooks'
 import { deleteQuery, getDeleteVariables, getRecommVariables } from "../../lib/gqlqueries"
+import { usePlaylistValues, usePlaylistSetter } from './PlaylistContext';
 
 
 export function PlaylistItem(props) {
   const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
-  let { playlistData, playlistPosition, setViewMode } = props
+  const { playlistName, playlistData, focusPosition } = usePlaylistValues();
+  const { setFocusPosition, setViewMode } = usePlaylistSetter();
+  const {playlistPosition, getRecommData}= props 
   let index = playlistPosition - 1
   let nextPlaylistPosition = playlistPosition + 1;
 
@@ -29,7 +32,7 @@ export function PlaylistItem(props) {
 
   const [visibleFocusPosition, setVisibleFocusPosition] = useState(1);
   // Make focused position Add-Button visible
-  let addButtonClassnameTop = (props.focusPosition == playlistPosition ? "visible " : "invisible ") + " group-hover:visible -translate-x-1/2 -translate-y-1/2  left-1/2"
+  let addButtonClassnameTop = (focusPosition == playlistPosition ? "visible " : "invisible ") + " group-hover:visible -translate-x-1/2 -translate-y-1/2  left-1/2"
 
   return (
     <>
@@ -51,11 +54,11 @@ export function PlaylistItem(props) {
           </div>
         </div>
         <div id="BottomHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, props) }}  >
+          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition) }}  >
             <Icon {...props} id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 top-full -translate-x-1/2 -translate-y-1/2"></Icon>
           </a>
-          <a onClick={(event) => deleteItem(event, props)} >
+          <a onClick={(event) => deleteItem(event)} >
             <Icon {...props}  id="vjs-playlist-item-buttons-delete-icon-bottom" shape="delete" circle={true} circleClass="error" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 bottom-1/2"></Icon>
           </a>
@@ -64,8 +67,7 @@ export function PlaylistItem(props) {
     </>
   )
 
-  function changeToRecommMode(event, position, props) {
-    let {getRecommData, playlistData, playlistName, setFocusPosition, setViewMode} = props;
+  function changeToRecommMode(event, position) {
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
       let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, position) })
@@ -74,8 +76,7 @@ export function PlaylistItem(props) {
     }
   }
 
-  function deleteItem(event, props) {
-    let {playlistName, playlistPosition}= props;
+  function deleteItem(event) {
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
       sendDelete({ variables: getDeleteVariables(playlistName, playlistPosition) });
@@ -111,7 +112,7 @@ export function PlaylistItem(props) {
   function switchPlaylistItem_(event, next) {
     if (event.target && !event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons')) {
       setViewMode("view");
-      videojs.getPlayer("currentPlaylistItem").playlist.currentItem(index)
+      videojs.getPlayer("nextPlaylistItem").playlist.currentItem(index)
     }
   }
 }
