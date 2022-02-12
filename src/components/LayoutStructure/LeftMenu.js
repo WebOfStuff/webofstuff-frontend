@@ -18,10 +18,10 @@ const LeftMenu = ({ isVisible }) => {
             <Link href="/">Home</Link>
           </li>
           <li>
-            <Link href={"/aseftalangi@gmail.com"}>Walk</Link>
+            <Link href={"/"+playlistName}>Walk</Link>
           </li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Discover">Discover</Link></li>
-          <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Overview">Overview</Link></li>
+          <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/theme">Theme</Link></li>
           <li className="xl:mr-6 sm:mr-8 md:mr-8 mr-4"><Link href="/Options">Options</Link></li>
         </ul>
       </div>

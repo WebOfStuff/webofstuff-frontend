@@ -3,13 +3,13 @@ import { recommQuery, getRecommVariables, addQuery, getAddVariables } from '../.
 import { useMutation, useQuery } from 'graphql-hooks'
 import Icon from '../Base/Icon';
 import Box from '../Base/Box';
-import { usePlaylistSetter,usePlaylistValues } from './PlaylistContext';
+import { usePlaylistSetters, usePlaylistValues } from './PlaylistContext';
+import { useSession } from "next-auth/react";
+import { usePersona } from '../personas/PersonaContext';
 
 export default function Recommendations(props) {
-  
-  const { playlistName, focusPosition } = usePlaylistValues();
-  const { setFocusPosition} = usePlaylistSetter();
-  let { recommData} = props
+
+  let { recommData } = props
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
   if (recommData !== undefined) {
     let contents = recommData.contents;
@@ -17,16 +17,9 @@ export default function Recommendations(props) {
     let listItems;
 
     listItems = contents.map((item, index) =>
-      <>
-        <tr key={item.id}>
-          <th>
-            <a onClick={(event) => addItem(playlistName, focusPosition, item.id)} className="">
-              <Icon shape="add" circle={true} circleClass="success" strokeClass="neutral" className="h-[5vh] w-[5vh] z-20 relative left-1/4 stroke-current inline-block"></Icon>
-            </a>
-          </th>
-          <td>{item.name}</td>
-        </tr>
-      </>
+      <React.Fragment key= {item.id}>
+        <RecommendationsRow  item={item} index={index} sendAdd={sendAdd} />
+      </React.Fragment>
     );
 
   } else {
@@ -58,13 +51,36 @@ export default function Recommendations(props) {
     </>
 
   )
+}
 
-  function addItem(playlistName, position, id) {
-    let addVariables = getAddVariables(playlistName, position, id);
+function RecommendationsRow(props) {
+  let { item, index } = props;
+  const {sendAdd} = props;
+  const { data: session, status } = useSession();
+  const { state: persona, dispatch: setPersona } = usePersona();
+  const { playlistData, playlistName, focusPosition } = usePlaylistValues();
+  const { setFocusPosition } = usePlaylistSetters();
+  return (
+    <tr>
+      <th>
+        <a onClick={(event) => addItem(
+          item.id,
+          session?.user?.id,
+          session?.user.userPersonas[persona]?.persona.id,
+          session?.user.userPersonas[persona]?.persona.name
+        )} className="">
+          <Icon shape="add" circle={true} circleClass="success" strokeClass="neutral" className="h-[5vh] w-[5vh] z-20 relative left-1/4 stroke-current inline-block"></Icon>
+        </a>
+      </th>
+      <td>{item.name}</td>
+    </tr>)
+
+  function addItem(itemId, userId, personaId, personaName) {
+
+    let addVariables = getAddVariables(playlistName, parseInt(focusPosition), itemId, userId, personaId, personaName);
     sendAdd({ variables: addVariables })
     //TODO: should do +1 needs to be limited to success
-    setFocusPosition(position)
+    setFocusPosition(Math.min(focusPosition + 1, playlistData.length))
   }
-
 }
 

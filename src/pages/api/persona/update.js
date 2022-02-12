@@ -26,9 +26,13 @@ export default async function handle(req, res) {
     error = "no data"
   }
 
-  let message = { "where": req.query, "data": JSON.parse(req.body)};
-  let createPersona;
-  createPersona = await prisma.persona.create(message).then(
-    (createPersona !== undefined)? res.status(200).json({ name: 'John Doe' }):res.status(403).json(prisma.status)
-   )
+  let message = { "where": req.query, "data": JSON.parse(req.body),"include": {theme:true}};
+  let updatePersona;
+  updatePersona = await prisma.persona.update(message).then(response =>{
+    if (response !== undefined) {
+      res.status(200).json(response)
+    } else {
+      res.status(403).json(response)
+    }
+  })
 }; 

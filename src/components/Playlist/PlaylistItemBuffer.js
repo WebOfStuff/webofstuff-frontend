@@ -3,12 +3,12 @@ import 'videojs-playlist';
 import Icon from "../Base/Icon";
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { getRecommVariables } from "../../lib/gqlqueries"
-import { usePlaylistSetter, usePlaylistValues } from "./PlaylistContext";
+import { usePlaylistSetters, usePlaylistValues } from "./PlaylistContext";
 
 
 export function PlaylistItemBuffer(props) {
   const { playlistName, playlistData, focusPosition, viewMode, editMode } = usePlaylistValues();
-  const { setPlaylistData, setFocusPosition, setViewMode, setEditMode, } = usePlaylistSetter();
+  const { setPlaylistData, setFocusPosition, setViewMode, setEditMode, } = usePlaylistSetters();
   const {specialLocation, getRecommData, playlistPosition} = props;
   let itemButtonsClassname = "group h-[5vh] w-full z-10 block";
   let addButtonVisible = "invisible ";

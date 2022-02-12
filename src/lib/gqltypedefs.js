@@ -2,16 +2,16 @@
 export default function getTypeDefs() {
   const typeDefs = `#graphql
   type Content {
-    id: String!
+    id: String! @unique
     name: String!
     youtubeid: String
     playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")
     labels: [Label] @relationship(type: "IS", direction: IN, properties: "ContentLabels")
+    artists: [Artist] @relationship(type: "WORKED_ON", direction: IN, properties: "ArtistContents")
   }
 
   type Playlist {
-    id: String!
-    name: String!
+    name: String! @unique
     editmode: String
     contents: [Content] @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistContents")
     personas: [Persona] @relationship(type: "CONNECTED_TO", direction: OUT, properties: "PlaylistPersonas")
@@ -19,15 +19,24 @@ export default function getTypeDefs() {
 
 
   type Persona {
-    id: String!
+    id: String! @unique
     name: String!
     playlists: [Playlist] @relationship(type: "CONNECTED_TO", direction: IN, properties: "PlaylistPersonas")
-    user: String!
+    users: [User] @relationship(type: "USES", direction: IN, properties: "UserPersonas")
+  }
+
+  type User {
+    id: String! @unique
+    personas: [Persona] @relationship(type: "USES", direction: OUT, properties: "UserPersonas")
+  }
+
+  type Artist {
+    name: String! @unique
+    contents: [Content] @relationship(type: "WORKED_ON", direction: OUT, properties: "ArtistContents")
   }
 
   type Label {
-    id: String!
-    name: String!
+    name: String! @unique
     contents: [Content] @relationship(type: "IS", direction: OUT, properties: "ContentLabels")
   }
 
@@ -38,6 +47,10 @@ export default function getTypeDefs() {
   }
 
   interface PlaylistPersonas @relationshipProperties {
+    role: String
+  }
+
+  interface ArtistContents @relationshipProperties {
     role: String
   }
 
@@ -81,6 +94,29 @@ export default function getTypeDefs() {
             WHERE r.position >= $position
             SET r.position = r.position + 1 
             RETURN p
+            """
+        )
+  }
+  type Mutation {
+    mergePersonaAndPlaylistAndSetAsCurrent(personaId: String!, personaName: String!, user: String!, playlistName: String!): Playlist
+        @cypher(
+            statement: """
+            merge (pe:Persona {id: $personaId, name: $personaName, user: $user})
+            merge (plh:Playlist {name: 'helper'})
+            with plh, pe
+            merge ((plh)-[r:CONNECTED_TO]->(pe))
+            with r, pe, plh
+            merge (pl:Playlist {name: $playlistName})
+            ON CREATE 
+              SET r.role = 'owner'
+            ON MATCH
+              SET r.role  = 'editor'
+            with pl, r, pe, plh
+            merge ((pl)-[r2:CONNECTED_TO {role: r.role}]->(pe))
+            with pl, r2, pe,plh
+            DETACH DELETE plh
+            with pl, r2, pe
+            RETURN pl
             """
         )
   }

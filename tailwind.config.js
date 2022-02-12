@@ -6,4 +6,25 @@ module.exports = {
   plugins: [
     require('daisyui'),
   ],
+  daisyui: {
+    themes: [
+      {
+        'mytheme': { // custom theme
+          'primary' : "var(--primary)",
+          'primary-focus' : "var(--primary-focus)",
+          'primary-content' : "var(--primary-content)",
+          // other colors
+        },
+        'myothertheme': { // custom theme
+          'primary' : "var(--primary)",
+          'primary-focus' : "var(--primary-focus)",
+          'primary-content' : "var(--primary-content)",
+          // other colors
+        },
+      },
+      'dark', // and some pre-defined theme
+      'forest',
+      'synthwave'
+    ],
+  },
 }

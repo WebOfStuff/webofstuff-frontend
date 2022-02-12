@@ -1,11 +1,11 @@
 import { createPlaylistCookie, getPlaylistCookie } from './PlaylistCookies';
 import { PlaylistItem } from "./PlaylistItem";
 import { PlaylistItemBuffer } from "./PlaylistItemBuffer";
-import { usePlaylistValues } from './PlaylistContext';
-
+import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
 
 export function Playlist(props) {
   const { playlistName,  playlistData } = usePlaylistValues();
+   const { setPlaylistName } = usePlaylistSetters();
   let { className, getRecommData} = props
 
   let listItems;
@@ -21,12 +21,12 @@ export function Playlist(props) {
   return (
     <>
       <div id="playlistWrapper" className={className}>
-        <div className="form-control">
+        <form onSubmit={(event) => moveToDifferentPlaylist(event, setPlaylistName)}  className="form-control">
           <div className="flex space-x-2">
             <input type="text" placeholder={playlistName} className="w-full input input-primary" />
             <button className="btn btn-tertiary">Reload</button>
           </div>
-        </div>
+        </form>
         <ol id="Playlist">
           <PlaylistItemBuffer key="first" specialLocation="first" playlistPosition="1"  getRecommData={getRecommData} />
           {listItems}
@@ -42,7 +42,7 @@ export function findPlaylistName(session) {
   let playlistCookie = getPlaylistCookie();
   let cookied = (playlistCookie == null) ? false : true;
   if (session !== undefined && session !== null) {
-    playlistNode = session?.user?.personas[session?.user?.currentPersona]?.currentPlaylist
+    playlistNode = session?.user?.userPersonas[session?.user?.currentPersona]?.persona.currentPlaylist
   } else if (cookied) {
     playlistNode = playlistCookie;
   } else {
@@ -83,7 +83,7 @@ export function generatePlaylistName() {
     if (wordcounter == 0) {
       playlistName += word
     } else {
-      playlistName += "_" + word.toLowerCase()
+      playlistName += "" + word.toLowerCase()
     }
     wordcounter++
   }
@@ -106,7 +106,6 @@ const adjectives = [
 ]
 
 const connectors = [
-  "'n'",
   "and",
   "but not",
 ]
@@ -122,4 +121,11 @@ const wordTypes = {
   adjective: adjectives,
   connector: connectors,
   noun: nouns,
+}
+
+const moveToDifferentPlaylist = async (event, setPlaylistName) => {
+  event.preventDefault();
+  let newPlaylistName = generatePlaylistName()
+  setPlaylistName(newPlaylistName)
+  location.href = "/"+newPlaylistName
 }

@@ -6,29 +6,40 @@ import { useSession } from "next-auth/react";
 export function ThemeChanger(props) {
   const { data: session, status } = useSession()
   const { state: theme, dispatch: setTheme } = useTheme();
-  let currentPersona = session?.user?.currentPersona
+  
+  
 
   useEffect(() => {
-    async function setThemeInDB(id, theme) {
-      const persona = await fetch('/api/persona/update?id=' + id, {
-        method: 'post',
-        body: JSON.stringify({ currentTheme: theme }),
-      })
-    }
-    if (session) {
+    if (session && theme) {
       let currentPersona = session?.user?.currentPersona
-      setTheme(session?.user?.personas[currentPersona]?.currentTheme)
-      setThemeInDB(session?.user?.personas[currentPersona].id, theme);
+      setThemeInDB(session?.user?.userPersonas[currentPersona]?.personaId, theme);
+    }
+    async function setThemeInDB(personaId, theme) {
+      const persona = await fetch('/api/persona/update?id=' + personaId, {
+        method: 'post',
+        body: JSON.stringify({
+          theme: {
+            connect: {
+              name: theme,
+            }
+          },
+        }),
+      })
     }
   }, [session, setTheme, theme]);
 
-
-
-
   useEffect(() => {
+    if (theme == "" && (typeof window !== 'undefined')) {
+      let savedTheme = localStorage.getItem("theme")
+      if (savedTheme !== undefined) {
+        setTheme(savedTheme)
+      } else {
+        setTheme("synthwave")
+      }
+    }
     document.documentElement.setAttribute("data-theme", theme);
     localStorage.setItem("theme", theme);
-  }, [theme]);
+  }, [theme, setTheme]);
 
 
   let themesList = themes.map((themeInList, index) => {
@@ -38,7 +49,7 @@ export function ThemeChanger(props) {
     }
     return (
       <li key={themeInList} >
-        <a className={className} tabIndex="0" onClick={(e) => { setTheme(themeInList); setThemeInDBOnClick(session?.user?.personas[currentPersona].id, themeInList) }}>{icons[index]} {themeInList}</a>
+        <a className={className} tabIndex="0" onClick={(e) => { setTheme(themeInList) }}>{icons[index]} {themeInList}</a>
       </li>
     )
   });
@@ -63,11 +74,4 @@ export function ThemeChanger(props) {
       </div>
     </>
   )
-}
-
-async function setThemeInDBOnClick(id, theme) {
-  const persona = await fetch('/api/persona/update?id=' + id, {
-    method: 'post',
-    body: JSON.stringify({ currentTheme: theme }),
-  })
 }

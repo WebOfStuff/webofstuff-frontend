@@ -3,7 +3,7 @@ import React from "react";
 const ThemeContext = React.createContext()
 
 export function ThemeProvider({ children }) {
-  const [state, dispatch] = React.useState("light")
+  const [state, dispatch] = React.useState("")
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
   const value = { state, dispatch }
@@ -20,13 +20,14 @@ export function useTheme() {
 
 
 export const themes = [
-  "light",
+/*   "light",
   "black",
   "cupcake",
   "bumblebee",
   "emerald",
-  "corporate",
+  "corporate", */
   "synthwave",
+  "mytheme",/* 
   "cyberpunk",
   "valentine",
   "halloween",
@@ -34,7 +35,7 @@ export const themes = [
   "forest",
   "aqua",
   "pastel",
-  "wireframe",
+  "wireframe", */
 ]
 
 

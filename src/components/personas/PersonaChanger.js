@@ -1,22 +1,24 @@
 import React, { useEffect, useContext } from "react";
 import { usePersona } from "./PersonaContext";
 import { useSession } from "next-auth/react";
+import { v4 } from "uuid";
 
-export function PersonaChanger(props) {
+export default function PersonaChanger(props) {
   const { data: session, status } = useSession()
   const { state: persona, dispatch: setPersona } = usePersona();
 
   useEffect(() => {
-    async function setPersonaInDB (email, persona){
-      const user = await fetch('/api/user/update?email=' + email, {
+    if (session) {
+      setPersona(session?.user?.currentPersona)
+      setPersonaInDB()
+    }
+    async function setPersonaInDB() {
+      const user = await fetch('/api/user/update?id=' + session.user.id, {
         method: 'post',
         body: JSON.stringify({ currentPersona: persona }),
       })
     };
-    if (session) {
-      setPersona(session?.user?.currentPersona)
-      setPersonaInDB(session?.user?.email, persona)
-    }
+
   }, [session, setPersona, persona]);
 
   useEffect(() => {
@@ -24,17 +26,17 @@ export function PersonaChanger(props) {
     localStorage.setItem("persona", persona);
   }, [persona]);
 
-  if (session?.user?.personas) {
-    const personaArray = Object.entries(session?.user?.personas);
-    let personasList = personaArray.map((personaInList, index) => {
-      let personaData= personaInList[1];
+  if (session?.user?.userPersonas) {
+    const personaArray = Object.values(session?.user?.userPersonas);
+    let personaList = personaArray.map((userPersonaInList, index) => {
+      let personaData = userPersonaInList.persona
       let className = ""
-      if (personaData.name == persona) {
+      if (index == persona) {
         className = "active";
       }
       return (
         <li key={personaData.id}>
-          <a className={className} tabIndex="0" onClick={(e) => { setPersona(personaData.name); setPersonaInDBOnClick(session?.user?.email, personaData.name) }}> {personaData.name}</a>
+          <a className={className} tabIndex="0" onClick={(e) => { setPersona(index); setPersonaInDBOnClick(session?.user?.email, index) }}> {personaData.name}</a>
         </li>
       )
     });
@@ -53,7 +55,13 @@ export function PersonaChanger(props) {
               </path></svg></div>
           <div className="mt-[3vh] overflow-y-auto shadow-2xl top-px dropdown-content h-auto w-52 rounded-b-box bg-base-100 text-base-content">
             <ul className="p-4 menu compact">
-              {personasList}
+              <form onSubmit={async (event) => {createNewPersonafromButton(event,session)}} className="form-control">
+                <li className="flex flex-row space-x-2">
+                  <input name="newPersonaTextField" type="text" placeholder={"New name"} className="w-4/6 input input-primary" /> {/* TODO: Add random personaName */}
+                  <button className="w-1/6 btn btn-tertiary">+</button>
+                </li>
+              </form>
+              {personaList}
             </ul>
           </div>
         </div>
@@ -69,4 +77,57 @@ const setPersonaInDBOnClick = async (email, persona) => {
     method: 'post',
     body: JSON.stringify({ currentPersona: persona }),
   })
+};
+
+const createNewPersonafromButton = async (event, session) => {
+  // create Persona
+  let userId = session?.user?.id
+  let personaId = v4()
+  let personaName = event.target.newPersonaTextField.value
+  let currentPlaylist = session?.user?.userPersonas[session?.user?.currentPersona]?.currentPlaylist
+  let theme = session?.user?.userPersonas[session?.user?.currentPersona]?.currentTheme
+  let assignedBy = user.id
+  createNewPersona(event, userId, personaId, personaName, currentPlaylist, theme, assignedBy)  
+}
+
+
+export const createNewPersona = async (event, userId, personaId, personaName, currentPlaylist, theme, assignedBy) => {
+  let payload = {
+    data: {
+      id: personaId,
+      name: personaName, 
+      currentPlaylist: currentPlaylist,
+      theme: {
+        connect: {
+          name: theme
+        }
+      },
+      // maybe should be current Theme instead?
+      ownerId: userId,
+      users: {
+        create: {
+          assignedBy: assignedBy,
+          user: {
+            connect: {
+              id: userId,
+            },
+          },
+        },
+      },
+    },
+    include: {
+      users: true,
+      theme: true
+    },
+  }
+  try {
+    const newPersona = await fetch(process.env.URL + 'api/persona/create', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    })
+    return { payload, newPersona }
+  } catch (e) {
+    console.log(e.code)
+    throw e
+  }
 };

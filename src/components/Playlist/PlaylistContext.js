@@ -6,11 +6,11 @@ const PlaylistSetterContext = React.createContext()
 
 
 export function PlaylistProvider(props) {
-  let { playlistName: initialPlaylistName, pos, view, edit } = props.query;
+  let { pos, view, edit } = props.query;
   const [viewMode, setViewMode] = useState("initial");
   const [editMode, setEditMode] = useState(edit || "true");
   const [focusPosition, setFocusPosition] = useState(pos || 0);
-  const [playlistName, setPlaylistName] = useState(initialPlaylistName);
+  const [playlistName, setPlaylistName] = useState(props.initialPlaylistName);
   const [playlistData, setPlaylistData] = useState([]);
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
@@ -48,7 +48,7 @@ export function usePlaylistValues() {
   }
   return context
 }
-export function usePlaylistSetter() {
+export function usePlaylistSetters() {
   const context = React.useContext(PlaylistSetterContext)
   if (context === undefined) {
     throw new Error('usePlaylistSetter must be used within a PlaylistSetterProvider')

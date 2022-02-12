@@ -2,7 +2,7 @@ import React from "react";
 const PersonaContext = React.createContext()
 
 export function PersonaProvider({ children }) {
-  const [state, dispatch] = React.useState("Main")
+  const [state, dispatch] = React.useState(0)
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
   const value = { state, dispatch }

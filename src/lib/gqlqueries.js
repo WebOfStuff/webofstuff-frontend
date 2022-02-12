@@ -1,4 +1,4 @@
-export const listQuery = `#graphql
+export const getPlaylist = `#graphql
 query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!]) {
     playlists(where: $where) {
       name
@@ -25,9 +25,9 @@ query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!
 `
 
 export function getListVariables(playlistName) {
-  const listVariables = { 
-  "where": { "name": playlistName }, 
-  "sort": [{ "edge": { "position": "ASC" } }], 
+  const listVariables = {
+    "where": { "name": playlistName },
+    "sort": [{ "edge": { "position": "ASC" } }],
   }
   return listVariables
 };
@@ -39,14 +39,13 @@ mutation CreatePersonas(input: $input){
     name
     user
     playlists() {
-      id
       name
     }
   }
 }
 `
 
-export function getCreatePlaylistAndPersonaAndLinkThemVariables(playlistName, personaId, personaName, personaUser, personaPlaylistRole) {
+/* export function getCreatePlaylistAndPersonaAndLinkThemVariables(playlistName, personaId, personaName, personaUser, personaPlaylistRole) {
   const createPlaylistAndPersonaAndLinkThemVariables = { 
  "input": [{
       "id": personaId,
@@ -68,7 +67,7 @@ export function getCreatePlaylistAndPersonaAndLinkThemVariables(playlistName, pe
     }]
   };
   return createPlaylistAndPersonaAndLinkThemVariables;
-}
+} */
 
 export const recommQuery = `#graphql
   query getRecommendation{  
@@ -79,15 +78,18 @@ export const recommQuery = `#graphql
   }
 `
 
- export function getRecommVariables(playlistName) {
+export function getRecommVariables(playlistName) {
   const listVariables = {};
   return listVariables
-}; 
+};
 
 export const addQuery = `#graphql
-  mutation addContentToPlaylist($where: PlaylistWhere, $connect: PlaylistConnectInput, $playlistName: String!, $position: Int!) {
+  mutation addContentToPlaylist($user: String!, $personaId: String!, $personaName: String!,  $playlistName: String!, $position: Int!, $where: PlaylistWhere, $connect: PlaylistConnectInput) {
+    mergePersonaAndPlaylistAndSetAsCurrent(user: $user, personaId: $personaId, personaName: $personaName,  playlistName: $playlistName ) {
+      name: name
+    }
     uptickPlaylistStartingAtPosition(playlistName: $playlistName, position: $position) {
-      name
+      name: name
     }
     updatePlaylists(where: $where, connect: $connect) {
       info {
@@ -101,10 +103,13 @@ export const addQuery = `#graphql
    }
   `
 
-export function getAddVariables(playlistName, position, id) {
+export function getAddVariables(playlistName, position, itemId, userId, personaId, personaName) {
   const addVariables =
   {
+    "personaName": personaName,
+    "personaId": personaId,
     "position": position,
+    "user": userId,
     "playlistName": playlistName,
     "where": {
       "name": playlistName
@@ -113,7 +118,7 @@ export function getAddVariables(playlistName, position, id) {
       "contents": [
         {
           "where": {
-            "node": { "id": id }
+            "node": { "id": itemId }
           },
           "edge": {
             "position": position

@@ -4,13 +4,13 @@ import Icon from "../Base/Icon";
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useMutation } from 'graphql-hooks'
 import { deleteQuery, getDeleteVariables, getRecommVariables } from "../../lib/gqlqueries"
-import { usePlaylistValues, usePlaylistSetter } from './PlaylistContext';
+import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
 
 
 export function PlaylistItem(props) {
   const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
   const { playlistName, playlistData, focusPosition } = usePlaylistValues();
-  const { setFocusPosition, setViewMode } = usePlaylistSetter();
+  const { setFocusPosition, setViewMode } = usePlaylistSetters();
   const {playlistPosition, getRecommData}= props 
   let index = playlistPosition - 1
   let nextPlaylistPosition = playlistPosition + 1;

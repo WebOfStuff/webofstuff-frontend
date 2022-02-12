@@ -1,6 +1,6 @@
 
 import { useLayoutEffect, useState } from "react";
-import { useTheme, themes, icons } from ".././themes/ThemeContext";
+import { useTheme, icons } from ".././themes/ThemeContext";
 
 
 export default function Icon(props) {
@@ -11,18 +11,23 @@ export default function Icon(props) {
   const [circleColor, setCircleColor] = useState("black");
   const [strokeColor, setStrokeColor] = useState("white");
 
+
   useLayoutEffect(() => {
     if (theme !== null && theme !== undefined) {
-      let themestring = "[data-theme=" + theme + "]"
-      const themes = require('daisyui/colors/themes');
-      setStrokeColor(themes[themestring][strokeClass])
+      if (theme !== "mytheme") { //TODO: get themedata from session (needs all fields)
+        let themes = require('daisyui/colors/themes');
+        let themestring = "[data-theme=" + theme + "]"
+        setStrokeColor(themes[themestring][strokeClass])
+      }
     }
   }, [theme, strokeClass]);
   useLayoutEffect(() => {
     if (theme !== null && theme !== undefined) {
-      let themestring = "[data-theme=" + theme + "]"
-      const themes = require('daisyui/colors/themes');
-      setCircleColor(themes[themestring][circleClass])
+      if (theme !== "mytheme") { //TODO: get themedata from session (needs all fields)
+        let themes = require('daisyui/colors/themes');
+        let themestring = "[data-theme=" + theme + "]"
+        setCircleColor(themes[themestring][circleClass])
+      }
     }
   }, [theme, circleClass]);
 

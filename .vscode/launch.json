@@ -31,6 +31,10 @@
           "skipFiles": [
             "<node_internals>/**"
           ],
+          "runtimeArgs": [
+            "--harmony",
+            "--no-deprecation"
+        ],
           "port": 4444
         }
       ]
