@@ -63,11 +63,11 @@ export default function getTypeDefs() {
   }
 
   type Mutation {
-    addContentToPlaylist(contentId: String!, playlistName: String!, position: Int!): Playlist
+    addContentToPlaylist(itemId: String!, playlistName: String!, position: Int!): Playlist
          @cypher(
             statement: """
-            MATCH (p:Playlist {name:$playlistName}),(c:Content  {id:$contentId}})
-            CreateOrConnect c-[r:INCLUDED_IN {position:$position}]->p
+            MATCH (p:Playlist {name:$playlistName}),(c:Content  {id:$itemId})
+            MERGE (c)-[r:INCLUDED_IN {position:$position}]->(p)
             RETURN p
             """
           )
@@ -118,6 +118,29 @@ export default function getTypeDefs() {
             with pl, r2, pe
             RETURN pl
             """
+        )
+  }
+
+  input PlaylistItem{
+  videoId: String!
+  position: Int
+  title: String!
+  contentId: String!
+}
+
+  type Mutation {
+    importYtPlaylist(playlistName: String!, playlistItems: [PlaylistItem]!): Label
+        @cypher(
+          statement: """
+          UNWIND $playlistItems AS playlistItem
+          MERGE (l:Label {name: $playlistName})
+          MERGE (c:Content {youtubeid: playlistItem.videoId})
+          ON CREATE
+            SET c.id = playlistItem.contentId
+            SET c.name = playlistItem.title
+          MERGE (c)<-[r:IS]-(l)
+          RETURN l
+"""
         )
   }
 `

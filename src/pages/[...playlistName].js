@@ -5,7 +5,7 @@ import PlaylistEditor from '../components/Playlist/PlaylistEditor';
 import { useRouter } from 'next/router';
 
 
-export default function Walk(props) {
+export default function Playlist(props) {
   const router = useRouter();
 
   let playlistName, view, query;
@@ -36,9 +36,6 @@ export default function Walk(props) {
      return false
    }
   }
-
-
-
 }
 /* export async function getStaticProps({ params }) {
   let me;

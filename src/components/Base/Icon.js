@@ -1,6 +1,6 @@
 
 import { useLayoutEffect, useState } from "react";
-import { useTheme, icons } from ".././themes/ThemeContext";
+import { useTheme, icons } from "../Themes/ThemeContext";
 
 
 export default function Icon(props) {

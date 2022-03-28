@@ -1,7 +1,7 @@
 import React from "react"
 import { signIn, signOut, useSession } from "next-auth/react"
-import { ThemeChanger } from "../themes/ThemeChanger"
-import PersonaChanger from "../personas/PersonaChanger"
+import { ThemeChanger } from "../Themes/ThemeChanger"
+import PersonaChanger from "../Personas/PersonaChanger"
 
 
 export default function TopMenu(props) {

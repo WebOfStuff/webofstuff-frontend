@@ -13,6 +13,8 @@
     "apollo-server-micro": "^3.6.2",
     "daisyui": "^1.25.4",
     "express": "^4.17.2",
+    "google-auth-library": "^7.14.0",
+    "googleapis": "^95.0.0",
     "graphql": "^15.8.0",
     "graphql-hooks": "^5.6.0",
     "micro": "^9.3.4",
@@ -28,7 +30,6 @@
     "uuid": "^8.3.2",
     "video.js": "^7.17.0",
     "videojs-playlist": "^4.3.1",
-    "videojs-playlist-ui": "file:./videojs-playlist-ui-3.9.8.tgz",
     "videojs-youtube": "^2.6.1"
   },
   "name": "webofstuff-frontend",

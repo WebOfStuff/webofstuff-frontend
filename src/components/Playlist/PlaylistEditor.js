@@ -10,7 +10,7 @@ import Player from './../Video/Player';
 import { addQuery, deleteQuery, getListVariables, getPlaylist, recommQuery } from '../../lib/gqlqueries';
 import { usePlaylistSetters, usePlaylistValues } from './PlaylistContext';
 import PlayerForPlaylist from './PlayerForPlaylist';
-import { useTheme } from '../themes/ThemeContext';
+import { useTheme } from '../Themes/ThemeContext';
 
 
 export default function PlaylistEditor(props) {

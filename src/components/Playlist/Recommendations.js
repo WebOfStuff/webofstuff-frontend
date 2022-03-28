@@ -1,11 +1,11 @@
 import React from 'react';
-import { recommQuery, getRecommVariables, addQuery, getAddVariables } from '../../lib/gqlqueries';
+import { addQuery, getAddVariables } from '../../lib/gqlqueries';
 import { useMutation, useQuery } from 'graphql-hooks'
 import Icon from '../Base/Icon';
 import Box from '../Base/Box';
 import { usePlaylistSetters, usePlaylistValues } from './PlaylistContext';
 import { useSession } from "next-auth/react";
-import { usePersona } from '../personas/PersonaContext';
+import { usePersona } from '../Personas/PersonaContext';
 
 export default function Recommendations(props) {
 

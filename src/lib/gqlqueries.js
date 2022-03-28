@@ -84,21 +84,15 @@ export function getRecommVariables(playlistName) {
 };
 
 export const addQuery = `#graphql
-  mutation addContentToPlaylist($user: String!, $personaId: String!, $personaName: String!,  $playlistName: String!, $position: Int!, $where: PlaylistWhere, $connect: PlaylistConnectInput) {
+  mutation addContentToPlaylist($user: String!, $personaId: String!, $personaName: String!,  $playlistName: String!, $position: Int!, $itemId: String!) {
     mergePersonaAndPlaylistAndSetAsCurrent(user: $user, personaId: $personaId, personaName: $personaName,  playlistName: $playlistName ) {
       name: name
     }
     uptickPlaylistStartingAtPosition(playlistName: $playlistName, position: $position) {
       name: name
     }
-    updatePlaylists(where: $where, connect: $connect) {
-      info {
-        relationshipsCreated
-        relationshipsDeleted
-        nodesDeleted
-        nodesCreated
-        bookmark
-      }
+    addContentToPlaylist(itemId: $itemId, playlistName: $playlistName,position: $position) {
+      name: name
     }
    }
   `
@@ -111,21 +105,7 @@ export function getAddVariables(playlistName, position, itemId, userId, personaI
     "position": position,
     "user": userId,
     "playlistName": playlistName,
-    "where": {
-      "name": playlistName
-    },
-    "connect": {
-      "contents": [
-        {
-          "where": {
-            "node": { "id": itemId }
-          },
-          "edge": {
-            "position": position
-          }
-        }
-      ]
-    }
+    "itemId": itemId
   }
   return addVariables;
 }
@@ -192,4 +172,22 @@ export function saveVariables(playlistName) {
     }
   }
   return saveVariables;
+}
+
+
+export const importYtPlaylist = `#graphql
+mutation importYtPlaylist($playlistName: String!, $playlistItems: [PlaylistItem]!) {
+  importYtPlaylist(playlistName: $playlistName, playlistItems: $playlistItems) {
+    name
+  }
+}
+`
+
+export function getImportVariables(playlistName, playlistItems) {
+  const importVariables =
+  {
+    "playlistName": playlistName,
+    "playlistItems" : playlistItems
+  }
+  return importVariables;
 }
