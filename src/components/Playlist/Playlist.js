@@ -2,36 +2,49 @@ import { createPlaylistCookie, getPlaylistCookie } from './PlaylistCookies';
 import { PlaylistItem } from "./PlaylistItem";
 import { PlaylistItemBuffer } from "./PlaylistItemBuffer";
 import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
+import  Scrollbar from '../Base/Scrollbar';
 
 export function Playlist(props) {
-  const { playlistName,  playlistData } = usePlaylistValues();
-   const { setPlaylistName } = usePlaylistSetters();
-  let { className, getRecommData} = props
+  const { playlistName, playlistData } = usePlaylistValues();
+  const { setPlaylistName } = usePlaylistSetters();
+  let { className, getRecommData } = props
 
   let listItems;
   if (playlistData !== undefined) {
     listItems = playlistData.map((item, index) => {
       let itemKey = item.id + index.toString();
       return (
-        <PlaylistItem key={itemKey} playlistPosition={index + 1}  getRecommData={getRecommData}/>
+        <PlaylistItem key={itemKey} playlistPosition={index + 1} getRecommData={getRecommData} />
       )
     });
   }
-
+  let placeInPlaylist = 0;
   return (
     <>
       <div id="playlistWrapper" className={className}>
-        <form onSubmit={(event) => moveToDifferentPlaylist(event, setPlaylistName)}  className="form-control">
+        <form onSubmit={(event) => moveToDifferentPlaylist(event, setPlaylistName)} className="form-control">
           <div className="flex space-x-2">
             <input type="text" placeholder={playlistName} className="w-full input input-primary" />
             <button className="btn btn-tertiary">Reload</button>
           </div>
         </form>
-        <ol id="Playlist">
-          <PlaylistItemBuffer key="first" specialLocation="first" playlistPosition="1"  getRecommData={getRecommData} />
-          {listItems}
-          <PlaylistItemBuffer key="last" specialLocation="last" playlistPosition={playlistData.length + 1}  getRecommData={getRecommData}/>
-        </ol>
+        <PlaylistItemBuffer key="first" specialLocation="first" playlistPosition="1" getRecommData={getRecommData} />
+        <div className = "flex flex-row">
+          <ol id="Playlist" className = "scrollbar w-11/12">
+            
+            {listItems[placeInPlaylist]}
+            {listItems[placeInPlaylist + 1]}
+            {listItems[placeInPlaylist + 2]}
+            {listItems[placeInPlaylist + 3]}
+            {listItems[placeInPlaylist + 4]}
+            {listItems[placeInPlaylist + 5]}
+            {listItems[placeInPlaylist + 6]}
+           
+          </ol>
+
+         <Scrollbar listItems={listItems}></Scrollbar>
+        </div>
+        <PlaylistItemBuffer key="last" specialLocation="last" playlistPosition={playlistData.length + 1} getRecommData={getRecommData} />
       </div>
     </>
   );
@@ -127,5 +140,5 @@ const moveToDifferentPlaylist = async (event, setPlaylistName) => {
   event.preventDefault();
   let newPlaylistName = generatePlaylistName()
   setPlaylistName(newPlaylistName)
-  location.href = "/"+newPlaylistName
+  location.href = "/" + newPlaylistName
 }
