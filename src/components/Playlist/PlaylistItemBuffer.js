@@ -7,8 +7,8 @@ import { usePlaylistSetters, usePlaylistValues } from "./PlaylistContext";
 
 
 export function PlaylistItemBuffer(props) {
-  const { playlistName, playlistData, focusPosition, viewMode, editMode } = usePlaylistValues();
-  const { setPlaylistData, setFocusPosition, setViewMode, setEditMode, } = usePlaylistSetters();
+  const { playlistName, playlistData, focusPosition} = usePlaylistValues();
+  const { setFocusPosition, setViewMode, } = usePlaylistSetters();
   const {specialLocation, getRecommData, playlistPosition} = props;
   let itemButtonsClassname = "group h-[5vh] w-full z-10 block";
   let addButtonVisible = "invisible ";

@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --primary: #1e90ff;
+  --primary: brown;
+}
+
+
+.mytheme {
+  --primary: var(--primary);
   --primary-focus: #ffffff;
 }

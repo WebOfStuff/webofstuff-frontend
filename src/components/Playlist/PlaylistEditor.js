@@ -45,7 +45,7 @@ export default function PlaylistEditor(props) {
 
   useEffect(() => {
     setBlocked(listLoading || listData?.loading || recommReloading || listError || listLoading == undefined || recommError)
-  }, [listLoading, listData?.loading , recommReloading ,listError , listLoading , recommError]);
+  }, [listLoading, listData?.loading , recommReloading ,listError , recommError]);
 
   useEffect(() => {
     if (!blocked) {
@@ -53,7 +53,7 @@ export default function PlaylistEditor(props) {
         setViewMode(props.view || "view")
       }
     }
-  }, [viewMode, setViewMode, blocked]);
+  }, [viewMode, setViewMode, blocked, props.view ]);
 
   useEffect(() => {
     if (!blocked) {
@@ -71,7 +71,7 @@ export default function PlaylistEditor(props) {
         setEditMode(checkEditmode(session, listData, editMode));
       }
     }
-  }, [editMode, session, listData, blocked]);
+  }, [editMode, session, listData, blocked, setEditMode]);
 
   /*
   if (viewMode !== checkViewmode(session, listData, viewMode)) {
@@ -85,18 +85,18 @@ export default function PlaylistEditor(props) {
         setFocusPosition(playlistData.length + 1)
       }
     }
-  }, [focusPosition, playlistData, blocked]);
+  }, [focusPosition, playlistData, setFocusPosition, blocked]);
 
 
   
   const [showPlayer, setShowPlayer] = useState(viewMode == "view" || (viewMode == "recomm" && focusPosition !== playlistData.length + 1));
-  useEffect(() => {if (!blocked) { setShowPlayer(viewMode == "view" || (viewMode == "recomm" && focusPosition !== playlistData.length + 1))}}, [viewMode, focusPosition, playlistData]);
+  useEffect(() => {if (!blocked) { setShowPlayer(viewMode == "view" || (viewMode == "recomm" && focusPosition !== playlistData.length + 1))}}, [blocked, viewMode, focusPosition, playlistData]);
 
   const [showRecommendation, setShowRecommendation] = useState(viewMode == "recomm");
-  useEffect(() => {if (!blocked) {  setShowRecommendation(viewMode == "recomm") }}, [viewMode]);
+  useEffect(() => {if (!blocked) {  setShowRecommendation(viewMode == "recomm") }}, [blocked,viewMode]);
 
   const [showPreviousPlayer, setShowPreviousPlayer] = useState(viewMode == "recomm" && focusPosition !== 1);
-  useEffect(() => {if (!blocked) {  setShowPreviousPlayer(viewMode == "recomm" && focusPosition !== 1) }}, [viewMode, focusPosition]);
+  useEffect(() => {if (!blocked) {  setShowPreviousPlayer(viewMode == "recomm" && focusPosition !== 1) }}, [blocked,viewMode, focusPosition]);
 
   if (listLoading || listData?.loading || recommReloading) return 'Loading...';
   if (listError || listLoading == undefined || recommError) return `Error! `;
@@ -107,11 +107,11 @@ export default function PlaylistEditor(props) {
         <div id="Friends" className="flex flex-col w-full pr-2">
           {showRecommendation &&
             <Recommendations recommData={recommData} />}
+          {/*showRecommendation && 
+           <Similarities recommData={recommData} className="flex-initial w-full" position={focusPosition} playlistData={playlistData}></Similarities>*/} 
           <div id="PlayerRow" className="flex flex-row">
             {showPreviousPlayer &&
               <PlayerForPlaylist playerName="previousPlaylistItem" position={focusPosition - 1} className="flex-initial w-full " playlistData={playlistData} />}
-            {/*  {viewMode == "recomm" && 
-           <Similarities recommData={recommData} className="flex-initial w-full" position={focusPosition} playlistData={playlistData}></Similarities>} */}
             {showPlayer &&
               <PlayerForPlaylist playerName="nextPlaylistItem" position={focusPosition} className="flex-initial w-full" playlistData={playlistData} />}
           </div>

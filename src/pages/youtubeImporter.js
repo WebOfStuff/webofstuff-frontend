@@ -1,9 +1,11 @@
+
+import { React } from 'react';
 import { data } from 'autoprefixer';
 import { useMutation } from 'graphql-hooks'
 import { importYtPlaylist, getImportVariables } from '../lib/gqlqueries';
 import { v4 } from "uuid";
 
-const youtubeImporter = () => {
+export default function YoutubeImporter () {
 
   const [sendImport, { data: importData, loading: importLoading, error: importError }] = useMutation(importYtPlaylist);
   const fetchData = async () => {
@@ -83,6 +85,3 @@ function importFromYT(playlistId) {
  */
 
 
-
-
-export default youtubeImporter

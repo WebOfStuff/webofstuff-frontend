@@ -3,7 +3,7 @@ import { google } from 'googleapis';
 
 let googleAuth;
 
-export default async (req, res) => {
+export default async function playlistitems(req, res) {
   debugger;
   googleAuth = new google.auth.GoogleAuth({
     credentials: {

@@ -9,6 +9,7 @@ query getPlaylist($where: PlaylistWhere, $sort: [PlaylistContentsConnectionSort!
           node {
             name
             youtubeid
+            id
           }
         }
       }
@@ -70,18 +71,39 @@ mutation CreatePersonas(input: $input){
 } */
 
 export const recommQuery = `#graphql
-  query getRecommendation{  
-    contents {
-      id
+  query getRecommendation ($previousContentId: String!, $followingContentId: String!){  
+    recommBySharedLabel (previousContentId: $previousContentId, followingContentId: $followingContentId) {
+      label
       name
+      id
     }
   }
 `
 
-export function getRecommVariables(playlistName) {
-  const listVariables = {};
-  return listVariables
+export function getRecommVariables(playlistName, playlistData, position, previousContentId, followingContentId) {
+  const recommVariables = {
+    "previousContentId": previousContentId,
+    "followingContentId": followingContentId,
+    "sort": [{ "edge": { "position": "ASC" } }],
+  }
+  return recommVariables
 };
+
+
+export const criteriaQuery = `#graphql
+  query getCriteria{  
+    contents {
+      [id]
+      [name]
+    }
+  }
+`
+
+export function getCriteriaVariables(playlistName) {
+  const criteriaVariables = {};
+  return criteriaVariables
+};
+
 
 export const addQuery = `#graphql
   mutation addContentToPlaylist($user: String!, $personaId: String!, $personaName: String!,  $playlistName: String!, $position: Int!, $itemId: String!) {

@@ -70,7 +70,12 @@ export function PlaylistItem(props) {
   function changeToRecommMode(event, position) {
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
-      let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, position) })
+      index=position-1
+
+      let previousContentId = playlistData[index-1].id 
+      let followingContentId = playlistData[index].id 
+
+      let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, position, previousContentId, followingContentId) })
       setFocusPosition(position);
       setViewMode("recomm");
     }

@@ -25,6 +25,13 @@ export default function getTypeDefs() {
     users: [User] @relationship(type: "USES", direction: IN, properties: "UserPersonas")
   }
 
+
+  type Recommendation {
+    id: String! @unique
+    name: String!
+    label: String! 
+  }
+
   type User {
     id: String! @unique
     personas: [Persona] @relationship(type: "USES", direction: OUT, properties: "UserPersonas")
@@ -143,6 +150,24 @@ export default function getTypeDefs() {
 """
         )
   }
+
+  type Query {
+    recommBySharedLabel (previousContentId: String!, followingContentId: String!): [Recommendation]
+        @cypher(
+          statement: """
+     MATCH (c1:Content  {id:	$previousContentId})<-[r1:IS]-(l:Label)-[r2]->(c2:Content) 
+     RETURN {label: l.name ,name: c2.name,id: c2.id} as Recommendation
+     UNION ALL 
+     MATCH (c2:Content  {id:	$followingContentId})<-[r1b:IS]-(lb:Label)-[r2b]->(c2b:Content) 
+     RETURN {label: lb.name ,name: c2b.name,id: c2b.id} as Recommendation
+"""
+        )
+  }
+
+
+
+
+
 `
   return typeDefs
 }
