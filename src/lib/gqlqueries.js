@@ -50,7 +50,7 @@ mutation CreatePersonas(input: $input){
   const createPlaylistAndPersonaAndLinkThemVariables = { 
  "input": [{
       "id": personaId,
-      "name": personaName,
+      "personaName": personaName,
       "user": personaUser,
       "playlists": {
         "create": [
@@ -70,18 +70,32 @@ mutation CreatePersonas(input: $input){
   return createPlaylistAndPersonaAndLinkThemVariables;
 } */
 
-export const recommQuery = `#graphql
-  query getRecommendation ($previousContentId: String!, $followingContentId: String!){  
-    recommBySharedLabel (previousContentId: $previousContentId, followingContentId: $followingContentId) {
+export const recomm = `#graphql
+  query getRecommendation ($personaId: String, $previousContentId: String, $followingContentId: String){ 
+    recomm (personaId: $personaId,previousContentId: $previousContentId, followingContentId: $followingContentId) {
       label
       name
       id
+      algorithm
+    }
+  }
+`
+export const recommFirst = `#graphql
+  query getFirstRecommendation ($personaId: String){ 
+    recommFirst(personaId: $personaId) {
+      label
+      name 
+      id
+      algorithm
     }
   }
 `
 
-export function getRecommVariables(playlistName, playlistData, position, previousContentId, followingContentId) {
+export function getRecommVariables(personaId, playlistName, playlistData, position, previousContentId, followingContentId) {
   const recommVariables = {
+    "personaId": personaId,
+    "playlistName": playlistName,
+    "playlistPosition": position,
     "previousContentId": previousContentId,
     "followingContentId": followingContentId,
     "sort": [{ "edge": { "position": "ASC" } }],

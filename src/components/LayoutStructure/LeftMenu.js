@@ -1,14 +1,23 @@
-import React from "react"
+import React , {useState, useEffect} from "react"
 import Link from "next/link"
 import { signIn, signOut, useSession } from "next-auth/react"
 import { findPlaylistName } from "../Playlist/Playlist"
+import { usePersonas } from "../Personas/PersonaContext"
+import { useUser } from "../User/UserContext"
 
 
 const LeftMenu = ({ isVisible }) => {
-  const { data: session, status } = useSession()
-  const loading = status === "loading"
-  if (loading) return 'Loading...';
-  let playlistName = findPlaylistName(session)
+  const { user } = useUser();
+  const { personas } = usePersonas();
+  const [playlistName, setPlaylistName] = useState();
+
+  useEffect(() => {
+    if (user && personas) {
+    setPlaylistName(findPlaylistName(user, personas))
+    }
+  }, [personas,user]);
+ 
+
 
   return (
     <div className="block absolute w-48" >

@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { ifError } from "assert"
 
 let prisma
 
@@ -12,6 +13,8 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export default async function handle(req, res) {
+  
+  try {
   let error, query, body
   
   if (req.query !== undefined) {
@@ -25,6 +28,9 @@ export default async function handle(req, res) {
   } else {
     error = "no data"
   }
+} catch (error) {
+  res.status(403).message(error)
+}
 
   let message = { "where": req.query, "data": JSON.parse(req.body),"include": {theme:true}};
   let updatePersona;

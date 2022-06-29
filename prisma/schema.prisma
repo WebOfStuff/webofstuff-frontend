@@ -22,9 +22,7 @@ model Account {
   session_state      String?
   oauth_token_secret String?
   oauth_token        String?
-
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
 }
 
@@ -38,7 +36,7 @@ model Session {
 
 model User {
   id             String         @id @unique @default(uuid())
-  name           String?
+  userName           String?
   visibleName    String?        @unique
   email          String         @unique
   emailVerified  DateTime?
@@ -50,33 +48,57 @@ model User {
 }
 
 model UserPersonas {
-  id          String   @id @unique @default(uuid()) 
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String   
-  persona     Persona  @relation(fields: [personaId], references: [id])
-  personaId   String   
-  assignedAt  DateTime @default(now())
-  assignedBy  String
+  id         String   @id @unique @default(uuid())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  persona    Persona  @relation(fields: [personaId], references: [id])
+  personaId  String
+  assignedAt DateTime @default(now())
+  assignedBy String
 }
 
 model Persona {
-  id              String         @id @unique @default(uuid()) 
-  name            String         @unique
+  id              String         @id @unique @default(uuid())
+  personaName     String    
   image           String?
   currentPlaylist String
-  themeName       String         
-  theme           Theme          @relation(fields: [themeName], references: [name])
+  themeId       String
+  theme           Theme          @relation(fields: [themeId], references: [id])
   users           UserPersonas[]
-  ownerId         String
+  ownerUserId         String
 }
 
 model Theme {
-  name           String    @id @unique
-  personas       Persona[]
-  primaryColor   String // Color
-  primaryFocus   String // Color
-  primaryContent String // Color
-  ownerId        String    
+  id              String         @id @unique @default(uuid())
+  themeName             String    @unique
+  ownerUserId          String
+  personas         Persona[]
+  //Primary Colors
+  primaryColor     String @default("#a991f7")
+  primaryFocus     String? 
+  primaryContent   String? 
+  //Secondary Colors
+  secondaryColor   String @default("#f6d860")
+  secondaryFocus   String? 
+  secondaryContent String? 
+  //Accent Colors
+  accentColor      String @default("#37cdbe")
+  accentFocus      String?
+  accentContent    String?
+  //System Colors
+  neutralColor     String?
+  neutralFocus     String?
+  neutralContent   String?
+  base100Color     String?
+  baseContent      String?
+  infoColor        String?
+  infoContent      String?
+  successColor     String?
+  successContent   String?
+  warningColor     String?
+  warningContent   String?
+  errorColor       String?
+  errorContent     String?
 }
 
 model VerificationToken {

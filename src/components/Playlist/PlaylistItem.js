@@ -3,7 +3,7 @@ import 'videojs-playlist';
 import Icon from "../Base/Icon";
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useMutation } from 'graphql-hooks'
-import { deleteQuery, getDeleteVariables, getRecommVariables } from "../../lib/gqlqueries"
+import { deleteQuery, getDeleteVariables } from "../../lib/gqlqueries"
 import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
 
 
@@ -30,7 +30,6 @@ export function PlaylistItem(props) {
   }, [playlistItemData]
   )
 
-  const [visibleFocusPosition, setVisibleFocusPosition] = useState(1);
   // Make focused position Add-Button visible
   let addButtonClassnameTop = (focusPosition == playlistPosition ? "visible " : "invisible ") + " group-hover:visible -translate-x-1/2 -translate-y-1/2  left-1/2"
 
@@ -54,7 +53,7 @@ export function PlaylistItem(props) {
           </div>
         </div>
         <div id="BottomHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition) }}  >
+          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, props) }}  >
             <Icon {...props} id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 top-full -translate-x-1/2 -translate-y-1/2"></Icon>
           </a>
@@ -67,20 +66,7 @@ export function PlaylistItem(props) {
     </>
   )
 
-  function changeToRecommMode(event, position) {
-    if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
-      event.preventDefault();
-      index=position-1
-
-      let previousContentId = playlistData[index-1].id 
-      let followingContentId = playlistData[index].id 
-
-      let recomm = getRecommData({ variables: getRecommVariables(playlistName, playlistData, position, previousContentId, followingContentId) })
-      setFocusPosition(position);
-      setViewMode("recomm");
-    }
-  }
-
+  
   function deleteItem(event) {
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
@@ -121,3 +107,4 @@ export function PlaylistItem(props) {
     }
   }
 }
+

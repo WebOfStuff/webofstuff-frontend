@@ -30,6 +30,7 @@ export default function getTypeDefs() {
     id: String! @unique
     name: String!
     label: String! 
+    algorithm: String!
   }
 
   type User {
@@ -63,6 +64,7 @@ export default function getTypeDefs() {
 
   interface PlaylistContents @relationshipProperties {
     position: Int
+    addedBy: String
   }
 
   interface UserPersonas @relationshipProperties {
@@ -152,21 +154,28 @@ export default function getTypeDefs() {
   }
 
   type Query {
-    recommBySharedLabel (previousContentId: String!, followingContentId: String!): [Recommendation]
+    recomm (personaId: String, previousContentId: String, followingContentId: String): [Recommendation]
         @cypher(
           statement: """
-     MATCH (c1:Content  {id:	$previousContentId})<-[r1:IS]-(l:Label)-[r2]->(c2:Content) 
-     RETURN {label: l.name ,name: c2.name,id: c2.id} as Recommendation
-     UNION ALL 
-     MATCH (c2:Content  {id:	$followingContentId})<-[r1b:IS]-(lb:Label)-[r2b]->(c2b:Content) 
-     RETURN {label: lb.name ,name: c2b.name,id: c2b.id} as Recommendation
+    MATCH (c1:Content  {id:	$previousContentId})<-[r1:IS]-(l:Label)-[r2]->(c2:Content) 
+    RETURN {label: l.name ,name: c2.name,id: c2.id, algorithm: 'Shared Label Prev'} as Recommendation 
+    UNION ALL 
+    MATCH (c2:Content  {id:	$followingContentId})<-[r1b:IS]-(lb:Label)-[r2b]->(c2b:Content) RETURN {label: lb.name ,name: c2b.name,id: c2b.id, algorithm: 'Shared Label Next'} as Recommendation
+    RETURN Recommendation
+ 
 """
         )
   }
 
-
-
-
+  type Query {
+    recommFirst (personaId: String): [Recommendation]
+        @cypher(
+          statement: """
+     MATCH (p:Persona  {id:	$personaId})
+     RETURN {label: \\"bla\\" ,name: \\"bla2\\",id: \\"bla3\\", algorithm: \\"Close to Persona\\"} as Recommendation
+"""
+        )
+  }
 
 `
   return typeDefs

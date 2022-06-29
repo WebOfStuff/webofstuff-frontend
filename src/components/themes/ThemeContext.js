@@ -3,10 +3,11 @@ import React from "react";
 const ThemeContext = React.createContext()
 
 export function ThemeProvider({ children }) {
-  const [state, dispatch] = React.useState("")
+  const [theme, setTheme] = React.useState(0)
+  const [themeChanges, setThemeChanges] = React.useState(true)
   // NOTE: you *might* need to memoize this value
   // Learn more in http://kcd.im/optimize-context
-  const value = { state, dispatch }
+  const value = { theme, setTheme,themeChanges, setThemeChanges}
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 

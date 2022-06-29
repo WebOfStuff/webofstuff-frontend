@@ -4,14 +4,14 @@ import { useMutation, useQuery } from 'graphql-hooks'
 import Icon from '../Base/Icon';
 import { usePlaylistSetters, usePlaylistValues } from './PlaylistContext';
 import { useSession } from "next-auth/react";
-import { usePersona } from '../Personas/PersonaContext';
+import { usePersonas } from '../Personas/PersonaContext';
 import Table from '../Base/Table';
 
 export default function Recommendations(props) {
   const { playlistName, playlistData, focusPosition } = usePlaylistValues();
   const { setFocusPosition } = usePlaylistSetters();
   const { data: session, status } = useSession();
-  const { state: persona, dispatch: setPersona } = usePersona();
+  const { personas, setPersonas } = usePersonas();
   let { recommData, shownRowLimit } = props
   const [sendAdd, { data: addData, loading: addLoading, error: addError }] = useMutation(addQuery);
   let recommendationTable;
@@ -19,19 +19,23 @@ export default function Recommendations(props) {
   let clickFunctions = [addItem, null, null]
   let clickParameterSets = [{
     userId: session?.user?.id,
-    personaId: session?.user.userPersonas[persona]?.persona.id,
-    personaName: session?.user.userPersonas[persona]?.persona.name
+    personaId: personas[session?.user.currentPersona]?.id,
+    personaName: personas[session?.user.currentPersona]?.name
   }, null, null]
 
   if (recommData !== undefined) {
-    recommData.contents=recommData.recommBySharedLabel
+    recommData.contents = playlistData.length > 0 ? recommData.recomm : recommData.recommFirst
     recommendationTable = <Table data={recommData} dataType="contents" clickFunctions={clickFunctions} clickParameterSets={clickParameterSets} fields={fields} tableId="Recommendations" />
   } else {
     recommendationTable =
-      <tr>
-        <th>1</th>
-        <td>No results.</td>
-      </tr>
+      <table>
+        <tbody>
+          <tr>
+            <th>1</th>
+            <td>No results.</td>
+          </tr>
+        </tbody>
+      </table>
   }
 
   return (

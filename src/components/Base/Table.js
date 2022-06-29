@@ -15,7 +15,7 @@ export default function Table(props) {
       </td>
   )})
 
-  data = shuffle(data[dataType])
+  //data = shuffle(data[dataType])
   
 
   let listItems = data.filter((row) => row.shownRow = true).slice(0, 5).map((row) =>

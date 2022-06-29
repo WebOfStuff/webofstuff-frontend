@@ -3,9 +3,6 @@ import GoogleProvider from 'next-auth/providers/google'
 import { PrismaClient } from "@prisma/client"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { v4 } from "uuid"
-/* import { generatePlaylistName } from "../../../components/Playlist/Playlist"
-import { chooseRandomTheme } from "../../../components/themes/ThemeContext"
-import { createNewPersona } from "../../../components/personas/PersonaChanger" */
 
 let prisma
 
@@ -36,47 +33,6 @@ export default NextAuth({
   },
   callbacks: {
     async session({ session, token, user }) {
-
-//TODO: set random User name
-
-
-      let getUserPersonaPayload = {
-        where: {
-          id: user.id
-        },
-        include: {
-          userPersonas: true,
-          userPersonas: {
-            include: {
-              persona: {
-                include: {
-                  theme: true
-                }
-              }
-            },
-          }
-        }
-      }
-      let personaData;
-      const userPersonasResponse = await fetch(process.env.URL + 'api/user/findUnique', {
-        method: 'POST',
-        body: JSON.stringify(getUserPersonaPayload),
-      }).then((response) => {
-        return response.json();
-      }).then((data) => {
-        personaData = data;
-      })
-
-      if (personaData.user.userPersonas.length == 0) {
-        let generatedPersonaId = v4()
-        //let {payload, newPersona} = createNewPersona(user.id, generatedPersonaId, "Main "+generatedPersonaId, generatePlaylistName() , chooseRandomTheme(), "System")
-        user.userPersonas = { Main: payload };
-        user.currentPersona = 0
-      }
-
-      session.user.id = user.id
-      session.user.currentPersona = user.currentPersona
-      session.user.userPersonas = personaData.user.userPersonas;
       console.log(session);
       return session;
     },

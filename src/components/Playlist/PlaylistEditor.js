@@ -7,14 +7,15 @@ import Recommendations from './Recommendations';
 import Similarities from './Similarities';
 import checkEditmode from './../Session/Rights/editRights';
 import Player from './../Video/Player';
-import { addQuery, deleteQuery, getListVariables, getPlaylist, recommQuery } from '../../lib/gqlqueries';
+import { addQuery, deleteQuery, getListVariables, getPlaylist, recomm, recommFirst } from '../../lib/gqlqueries';
 import { usePlaylistSetters, usePlaylistValues } from './PlaylistContext';
 import PlayerForPlaylist from './PlayerForPlaylist';
 import { useTheme } from '../Themes/ThemeContext';
-
+import createPhrase from '../Base/WordGen/phrasegen';
 
 export default function PlaylistEditor(props) {
-  const { playlistName, playlistData, focusPosition, viewMode, editMode } = usePlaylistValues();
+  const PlaylistValueContext = usePlaylistValues();
+  const { playlistName, playlistData, focusPosition, viewMode, editMode } = PlaylistValueContext
   const { setPlaylistData, setFocusPosition, setViewMode, setEditMode, } = usePlaylistSetters();
   const { theme, setTheme } = useTheme();
   // use Session if it exists
@@ -36,6 +37,7 @@ export default function PlaylistEditor(props) {
       }
     ]
   });
+  let recommQuery = playlistData.length > 0?recomm:recommFirst
 
   const [getRecommData, { loading: recommReloading, error: recommError, data: recommData }] = useManualQuery(recommQuery);
 
@@ -124,10 +126,10 @@ export default function PlaylistEditor(props) {
 
 
 export function startNewPlaylist(playlist, setPlaylistName, session) {
-  let newPlaylistname = generatePlaylistName();
-  setUrl(newPlaylistname)
-  setPlaylistName(newPlaylistname)
-  session.setPlaylistName(newPlaylistname);
+  let newPlaylistName = createPhrase("Playlist")
+  setUrl(newPlaylistName)
+  setPlaylistName(newPlaylistName)
+  session.setPlaylistName(newPlaylistName);
   playlist = []
 }
 

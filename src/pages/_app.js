@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { printIntrospectionSchema } from 'graphql'
 import { ThemeProvider } from '../components/Themes/ThemeContext'
 import { PersonaProvider } from '../components/Personas/PersonaContext'
+import { UserProvider } from '../components/User/UserContext'
 
 const client = new GraphQLClient({
   url: '/api/graphql'
@@ -16,16 +17,19 @@ const client = new GraphQLClient({
 
 export default function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   return (
-    <SessionProvider session={session}>
-      <ClientContext.Provider value={client}>
-        <PersonaProvider>
-          <ThemeProvider>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </ThemeProvider>
-        </PersonaProvider>
-      </ClientContext.Provider>
-    </SessionProvider>
+
+    <ClientContext.Provider value={client}>
+      <SessionProvider session={session}>
+        <UserProvider>
+          <PersonaProvider>
+            <ThemeProvider>
+              <Layout>
+                <Component {...pageProps} />
+              </Layout>
+            </ThemeProvider>
+          </PersonaProvider>
+        </UserProvider>
+      </SessionProvider>
+    </ClientContext.Provider>
   )
 }

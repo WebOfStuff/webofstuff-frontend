@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client"
-import handlePrismaCreate from "../../../lib/handlePrismaCreates"
-
+import handlePrismaUpdate from "../../../lib/handlePrismaUpdates"
 
 let prisma
 
@@ -14,6 +13,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export default async function handle(req, res) {
-  res = await handlePrismaCreate ("persona", req, res)
+  res = await handlePrismaUpdate ("theme", req, res)
   return res
 }; 

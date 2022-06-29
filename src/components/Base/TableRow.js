@@ -1,7 +1,4 @@
 
-import Icon from '../Base/Icon';
-import { useSession } from "next-auth/react";
-import { usePersona } from '../Personas/PersonaContext';
 import React from 'react';
 import TableCell from './TableCell';
 

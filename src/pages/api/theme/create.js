@@ -14,6 +14,6 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export default async function handle(req, res) {
-  res = await handlePrismaCreate ("persona", req, res)
+  res = await handlePrismaCreate ("theme", req, res)
   return res
 }; 
