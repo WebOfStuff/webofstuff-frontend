@@ -5,13 +5,17 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useMutation } from 'graphql-hooks'
 import { deleteQuery, getDeleteVariables } from "../../lib/gqlqueries"
 import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
+import { usePersonas } from '../Personas/PersonaContext';
+import { useUser } from '../User/UserContext';
 
 
 export function PlaylistItem(props) {
   const [sendDelete, { data: deleteData, loading: deleteLoading, error: deleteError }] = useMutation(deleteQuery);
   const { playlistName, playlistData, focusPosition } = usePlaylistValues();
   const { setFocusPosition, setViewMode } = usePlaylistSetters();
-  const {playlistPosition, getRecommData}= props 
+  const {playlistPosition, getRecommData, changeToRecommMode}= props 
+  const { user, setUser }= useUser()
+  const { personas, setPersonas }= usePersonas()
   let index = playlistPosition - 1
   let nextPlaylistPosition = playlistPosition + 1;
 
@@ -40,7 +44,7 @@ export function PlaylistItem(props) {
         onClick={(event) => switchPlaylistItem_(event)}
         onKeyDown={() => handleKeyDown_()}>
         <div id="TopHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, playlistPosition, props) }} >
+          <a onClick={(event) => { changeToRecommMode(event, playlistPosition, user, personas) }} >
             <Icon {...props}  id='vjs-playlist-item-buttons-add-icon-top' shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className={addButtonClassnameTop} ></Icon>
           </a>
@@ -53,7 +57,7 @@ export function PlaylistItem(props) {
           </div>
         </div>
         <div id="BottomHalf" className="group h-[5vh] w-full z-10 block">
-          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, props) }}  >
+          <a onClick={(event) => { changeToRecommMode(event, nextPlaylistPosition, user, personas) }}  >
             <Icon {...props} id="vjs-playlist-item-buttons-add-icon-bottom" shape="add" circle={true} circleClass="success" strokeClass="neutral"
               className="invisible group-hover:visible left-1/2 top-full -translate-x-1/2 -translate-y-1/2"></Icon>
           </a>

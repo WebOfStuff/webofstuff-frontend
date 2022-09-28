@@ -171,8 +171,9 @@ export default function getTypeDefs() {
     recommFirst (personaId: String): [Recommendation]
         @cypher(
           statement: """
-     MATCH (p:Persona  {id:	$personaId})
-     RETURN {label: \\"bla\\" ,name: \\"bla2\\",id: \\"bla3\\", algorithm: \\"Close to Persona\\"} as Recommendation
+     MATCH (p:Persona  {id:	$personaId})-->(l:Label)-->(c:Content)
+     RETURN {label: \\"Content\\" ,name: \\"bla2\\",id: \\"bla3\\", algorithm: \\"Close to Persona\\"} as Recommendation
+     
 """
         )
   }

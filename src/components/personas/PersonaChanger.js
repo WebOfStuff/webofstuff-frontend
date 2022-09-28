@@ -7,28 +7,27 @@ import { applyTheme } from "../Themes/ThemeChanger";
 import { useSession } from "next-auth/react";
 import { useTheme } from "../Themes/ThemeContext";
 import { fetchUserData } from "../User/UserChanger";
+import { chooseRandomTheme } from "../Themes/ThemeContext";
 
 export default function PersonaChanger(props) {
-  const { data: session , status } = useSession();
+  const { data: session, status } = useSession();
   const { user, setUser } = useUser();
-  const { personas, setPersonas, personasChange, setPersonasChange } = usePersonas();
-  const { theme, setTheme} = useTheme();
-  const [ personaList, setPersonaList ] = useState([]);
+  const { personas, setPersonas, personasChange, setPersonasChange, firstPersonaCreated, setFirstPersonaCreated } = usePersonas();
+  const { theme, setTheme } = useTheme();
+  const [personaList, setPersonaList] = useState([]);
 
   //Create a new Persona if the user currently doesn't have one
   useEffect(() => {
-    if (user != 0 && personas) {
-      if (personas.length == 0) {
-        let generatedPersonaId = v4()
-        let { payload, newPersona } = createNewPersona(user.id, generatedPersonaId, "Main " + generatedPersonaId, createPhrase("Playlist"), chooseRandomTheme(), "tabularasa")
-        user.currentPersona = 0
-      }
+    if (user  && Array.isArray(personas) && !personas.length && firstPersonaCreated == false) {
+      setFirstPersonaCreated(true)
+     let personaName = "Main"+ user.id
+      createNewPersona( user, setUser, personaName, personas, setPersonas)
     }
-  },[user, personas])
+  }, [user, personas])
 
   //Create the persona dropdown if personas were loaded 
   useEffect(() => {
-    if (personas != 0) {
+    if (Array.isArray(personas) && personas.length) {
       setPersonaList(personas.map((userPersonaInList, index) => {
         let personaData = userPersonaInList.persona
         let className = ""
@@ -56,7 +55,7 @@ export default function PersonaChanger(props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
             </svg>
             <label className="inline-block text-left leading-5">
-              PERSONA:<br/>
+              PERSONA:<br />
               {personas[user?.currentPersona]?.persona?.personaName}
             </label>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 1792 1792" className="inline-block w-5 mr-2 stroke-current">
@@ -66,7 +65,7 @@ export default function PersonaChanger(props) {
           </div>
           <div className="mt-[6vh] overflow-y-auto shadow-2xl top-px dropdown-content h-auto w-52 rounded-b-box bg-base-100 text-base-content">
             <ul className="p-4 menu compact">
-              <form onSubmit={async (event) => { createNewPersonafromButton(event, user, personas, setPersonas) }} className="form-control">
+              <form onSubmit={async (event) => { createNewPersonafromButton(event, user, setUser, personas, setPersonas) }} className="form-control">
                 <div className="flex flex-row space-x-2">
                   <input name="newPersonaTextField" type="text" defaultValue={randomPersonaName} className="w-4/6 input input-primary" />
                   <button className="w-1/6 btn btn-secondary">+</button>
@@ -90,67 +89,72 @@ const switchPersona = async (id, currentPersona, personas, setUser) => {
     method: 'post',
     body: JSON.stringify({ currentPersona: currentPersona }),
   }).then(response => response.json())
-  .then(data => {
-   
-    return data
-  })
+    .then(data => {
+
+      return data
+    })
   setUser(userData)
   applyTheme(personas[userData.currentPersona].persona.theme)
   document.documentElement.setAttribute("data-persona", personas[currentPersona].id);
   localStorage.setItem("persona", personas[currentPersona].id);
 };
 
-const createNewPersonafromButton = async (event, user , personas, setPersonas) => {
+const createNewPersonafromButton = async (event, user, setUser, personas, setPersonas) => {
   // create Persona
   event.preventDefault();
   let persona = personas[user.currentPersona].persona
-  let userId = user.id
-  let personaId = v4()
   let personaName = event.target.newPersonaTextField.value
-  let currentPlaylist = persona.currentPlaylist
-  let themeId = persona.theme.id
-  let assignedBy = user.id
-  createNewPersona(event, userId, personaId, personaName, currentPlaylist, themeId, assignedBy)
+  createNewPersona(user, setUser, personaName, personas, setPersonas)
   let deepUser = await fetchUserData(user)
   setPersonas(deepUser.userPersonas)
 }
 
 
-export const createNewPersona = async (event, userId, personaId, personaName, currentPlaylist, themeId, assignedBy) => {
+export const createNewPersona = async ( user, setUser, personaName, personas, setPersonas) => {
+  debugger;
+  let generatedPersonaId = v4()
   let payload = {
     data: {
-      id: personaId,
+      id: generatedPersonaId,
       personaName: personaName,
       currentPlaylist: personaName,
       theme: {
         connect: {
-          id: themeId
+          themeName: chooseRandomTheme()
         }
       },
       // maybe should be current Theme instead?
-      ownerUserId: userId,
+      ownerUserId: user.id,
       users: {
         create: {
-          assignedBy: "assignedBy",
+          assignedBy: "TabulaRasa",
           user: {
             connect: {
-              id: userId,
+              id: user.id,
             },
           },
         },
       },
-    },
-    include: {
-      users: true,
-      theme: true
-    },
+    }
   }
   try {
     const newPersona = await fetch('/api/persona/create', {
       method: 'POST',
       body: JSON.stringify(payload),
+    }).then(response => {
+      if (response != undefined) {
+        if (personas == 0) {
+          personas = [response.personaData]
+        } else {
+          personas.push(response.personaData)
+        }
+        setPersonas(personas)
+        let newUser = user
+        newUser.currentPersona = 0
+        setUser(newUser)
+      }
+      return { payload, response }
     })
-    return { payload, newPersona }
   } catch (e) {
     console.log(e.code)
     throw e

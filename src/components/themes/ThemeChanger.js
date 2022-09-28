@@ -13,7 +13,7 @@ export default function ThemeChanger(props) {
   const { personas, setPersonas } = usePersonas();
 
   useEffect(() => {
-    if (personas && theme && personas[user?.currentPersona]?.persona?.theme?.themeName != theme.themeName) {
+    if (Array.isArray(personas) && personas.length && theme && personas[user?.currentPersona]?.persona?.theme?.themeName != theme.themeName) {
       let themeToSet = personas[user.currentPersona].persona.theme
       setTheme(themeToSet)
       applyTheme(themeToSet)

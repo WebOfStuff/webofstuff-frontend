@@ -6,7 +6,7 @@ import { usePersonas } from "../Personas/PersonaContext";
 import { applyTheme } from "../Themes/ThemeChanger";
 
 export default function UserChanger(props) {
-  const { data: session , status } = useSession();
+  const { data: session, status } = useSession();
   const { user, setUser } = useUser();
   const { personas, setPersonas } = usePersonas();
   const { theme, setTheme } = useTheme();
@@ -17,10 +17,10 @@ export default function UserChanger(props) {
     [session, setUser, setPersonas, setTheme],
   );
 
-        //TODO: set random User name
+  //TODO: set random User name
 
   useEffect(() => {
-    if (session && user == 0) {
+    if (session && !user) {
       hydrateUserData(session).catch(console.error)
     };
   }, [user, session, hydrateUserData]);
@@ -44,9 +44,13 @@ export const fetchUserData = async (user) => {
 
 export const hydrateUserDataFunction = async (session, setUser, setPersonas, setTheme) => {
   const userData = await fetchUserData(session.user).catch(console.error)
-      setUser(userData)
-      setPersonas(userData.userPersonas)
-      let themeToSet = userData.userPersonas[userData.currentPersona].persona.theme
-      setTheme(themeToSet)
-      applyTheme(themeToSet)
+  setUser(userData)
+  if (userData.userPersonas != 0) {
+    setPersonas(userData.userPersonas)
+    let themeToSet = userData.userPersonas[userData.currentPersona].persona.theme
+    setTheme(themeToSet)
+    applyTheme(themeToSet)
+  } else {
+    setPersonas([])
+  }
 }

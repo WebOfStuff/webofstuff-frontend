@@ -6,7 +6,7 @@ import { useTheme, icons } from "../Themes/ThemeContext";
 export default function Icon(props) {
   const { id, className, circle, shape, strokeClass, circleClass, iconClass } = props;
   const {theme, setTheme} = useTheme()
-  className += " inline-block overflow-visible h-[5vh] w-[5vh] z-20 relative"
+  const fullClassName = className + " inline-block overflow-visible h-[5vh] w-[5vh] z-20 relative"
   const [curve, setCurve] = useState(shapes[shape]);
   const [circleColor, setCircleColor] = useState("#1AAA56");
   const [strokeColor, setStrokeColor] = useState("white");
@@ -37,7 +37,7 @@ export default function Icon(props) {
 
   return (
     <>
-      <svg id={id} xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 50 50">
+      <svg id={id} xmlns="http://www.w3.org/2000/svg" className={fullClassName} viewBox="0 0 50 50">
         {circle && <circle cx="50%" cy="50%" r="50%" fill={circleColor} strokeLinecap="round" strokeLinejoin="round" strokeWidth="{2}" className="text-neutral" />}
          <g transform="translate(10,10)">
          <path className="" stroke={strokeColor} fill={iconColor} strokeLinecap="round" strokeLinejoin="round" strokeWidth="{2}" d={curve} />

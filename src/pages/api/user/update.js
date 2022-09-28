@@ -32,9 +32,9 @@ export default async function handle(req, res) {
   let updateUser;
   updateUser = await prisma.user.update(message).then(response =>{
     if (response !== undefined) {
-      res.status(200).json(response)
+      return res.status(200).json(response)
     } else {
-      res.status(403).json(response)
+      return res.status(403).json(response)
     }
   })
 }; 

@@ -4,11 +4,16 @@ import { usePlaylistValues, usePlaylistSetters } from './PlaylistContext';
 import createPhrase from '../Base/WordGen/phrasegen';
 import Icon from "../Base/Icon";
 import { getRecommVariables } from "../../lib/gqlqueries"
+import { usePersonas } from '../Personas/PersonaContext';
+import { useUser } from '../User/UserContext';
+import { useEffect } from 'react';
 
 export function Playlist(props) {
   const { playlistName, playlistData, playlistPosition } = usePlaylistValues();
   const { setPlaylistName } = usePlaylistSetters();
   const { setFocusPosition, setViewMode } = usePlaylistSetters();
+  const { user, setUser }= useUser()
+  const { personas, setPersonas }= usePersonas()
 
   let { className, getRecommData } = props
   let itemButtonsClassname = "group h-[5vh] w-full z-10 block";
@@ -25,8 +30,8 @@ export function Playlist(props) {
     listItems = (
       <li className='buffer' >
         <div className={itemButtonsClassname}
-          onClick={(event) => changeToRecommMode(event, 1, persona)}>
-          <Icon {...props} className="-translate-x-1/2 translate-y-1/2  left-1/2" shape="add" circle={true} circleClass="successColor" iconClass="successContent" strokeClass="neutralColor"/>
+          onClick={(event) => changeToRecommMode(event, 1, user, personas)}>
+          <Icon {...props} id = "vjs-playlist-item-buttons" className="-translate-x-1/2 translate-y-1/2  left-1/2" shape="add" circle={true} circleClass="successColor" iconClass="successContent" strokeClass="neutralColor"/>
         </div>
       </li>
       )
@@ -48,15 +53,15 @@ export function Playlist(props) {
     </>
   );
 
-  function changeToRecommMode(event, position, persona) {
+  function changeToRecommMode(event, position, user, personas) {
     if (event.target && (event.target.ownerSVGElement?.id.startsWith('vjs-playlist-item-buttons'))) {
       event.preventDefault();
       let index = position - 1
 
       let previousContentId =  playlistData.length > 0?playlistData[index - 1].id:null
       let followingContentId = playlistData.length > 0?playlistData[index].id:null
-
-      let recomm = getRecommData({ variables: getRecommVariables(persona,playlistName, playlistData, position, previousContentId, followingContentId) })
+      let personaId =personas[user.currentPersona].id
+      let recomm = getRecommData({ variables: getRecommVariables(personaId,playlistName, playlistData, position, previousContentId, followingContentId) })
       setFocusPosition(position);
       setViewMode("recomm");
     }
