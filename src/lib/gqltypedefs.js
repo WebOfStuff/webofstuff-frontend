@@ -5,24 +5,24 @@ export default function getTypeDefs() {
     id: String! @unique
     name: String!
     youtubeid: String
-    playlists: [Playlist] @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")
-    labels: [Label] @relationship(type: "IS", direction: IN, properties: "ContentLabels")
-    artists: [Artist] @relationship(type: "WORKED_ON", direction: IN, properties: "ArtistContents")
+    playlists: [Playlist!]! @relationship(type: "INCLUDED_IN", direction: OUT, properties: "PlaylistContents")
+    labels: [Label!]! @relationship(type: "IS", direction: IN, properties: "ContentLabels")
+    artists: [Artist!]! @relationship(type: "WORKED_ON", direction: IN, properties: "ArtistContents")
   }
 
   type Playlist {
     name: String! @unique
     editmode: String
-    contents: [Content] @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistContents")
-    personas: [Persona] @relationship(type: "CONNECTED_TO", direction: OUT, properties: "PlaylistPersonas")
+    contents: [Content!]! @relationship(type: "INCLUDED_IN", direction: IN, properties: "PlaylistContents")
+    personas: [Persona!]! @relationship(type: "CONNECTED_TO", direction: OUT, properties: "PlaylistPersonas")
   }
 
 
   type Persona {
     id: String! @unique
     name: String!
-    playlists: [Playlist] @relationship(type: "CONNECTED_TO", direction: IN, properties: "PlaylistPersonas")
-    users: [User] @relationship(type: "USES", direction: IN, properties: "UserPersonas")
+    playlists: [Playlist!]! @relationship(type: "CONNECTED_TO", direction: IN, properties: "PlaylistPersonas")
+    users: [User!]! @relationship(type: "USES", direction: IN, properties: "UserPersonas")
   }
 
 
@@ -35,17 +35,17 @@ export default function getTypeDefs() {
 
   type User {
     id: String! @unique
-    personas: [Persona] @relationship(type: "USES", direction: OUT, properties: "UserPersonas")
+    personas: [Persona!]! @relationship(type: "USES", direction: OUT, properties: "UserPersonas")
   }
 
   type Artist {
     name: String! @unique
-    contents: [Content] @relationship(type: "WORKED_ON", direction: OUT, properties: "ArtistContents")
+    contents: [Content!]! @relationship(type: "WORKED_ON", direction: OUT, properties: "ArtistContents")
   }
 
   type Label {
     name: String! @unique
-    contents: [Content] @relationship(type: "IS", direction: OUT, properties: "ContentLabels")
+    contents: [Content!]! @relationship(type: "IS", direction: OUT, properties: "ContentLabels")
   }
 
   interface ContentLabels @relationshipProperties {

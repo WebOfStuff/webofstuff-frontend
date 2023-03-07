@@ -34,11 +34,8 @@ export default function UserChanger(props) {
 export const fetchUserData = async (user) => {
   const deepUserResponse = await fetch('./api/user/findUnique?email=' + user.email, {
     method: 'GET',
-  }).then(response => {
-    return response.json();
-  }).then(responseData => {
-    return responseData
-  })
+  }).then(response => response.json())
+  .then(responseData =>  responseData)
   return deepUserResponse
 }
 

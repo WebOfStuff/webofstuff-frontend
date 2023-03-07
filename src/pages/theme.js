@@ -17,7 +17,7 @@ export default function ThemeBuilder() {
   const { user, setUser } = useUser();
   const { personas, setPersonas } = usePersonas();
   const { theme, setTheme, themeChanges, setThemeChanges} = useTheme();
-  const [aspectFocused, setAspectFocused] = useState("primary-color")
+  const [aspectFocused, setAspectFocused] = useState("")
   const [aspectInputs, setAspectInputs] = useState([]);
   const [colorHex, setColorHex] = useState("#AAAAAA");
   const colors = ColorsDaisyUI();
