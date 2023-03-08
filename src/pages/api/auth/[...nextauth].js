@@ -33,7 +33,7 @@ export default NextAuth({
   },
   callbacks: {
     async session({ session, token, user }) {
-      console.log(session);
+      //console.log(session);
       return session;
     },
   }

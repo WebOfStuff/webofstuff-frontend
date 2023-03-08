@@ -33,7 +33,7 @@ export default async function handle(req, res) {
 
   const user = await prisma.user.findUnique(payload).then(response => {
     if (response !== undefined) {
-      console.log(response)
+      //console.log(response)
       res.status(200).json(response)
     } else {
       res.status(403).json(prisma.status)

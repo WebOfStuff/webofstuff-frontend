@@ -31,7 +31,7 @@ export function Playlist(props) {
       <li className='buffer' >
         <div className={itemButtonsClassname}
           onClick={(event) => changeToRecommMode(event, 1, user, personas)}>
-          <Icon {...props} id = "vjs-playlist-item-buttons" className="-translate-x-1/2 translate-y-1/2  left-1/2" shape="add" circle={true} circleClass="successColor" iconClass="successContent" strokeClass="neutralColor"/>
+          <Icon {...props} id = "vjs-playlist-item-buttons" className="-translate-x-1/2 translate-y-1/2  left-1/2" shape="add" circle={true} circleFillClass="successColor" shapeFillClass="successContent" shapeStrokeClass="neutralColor"/>
         </div>
       </li>
       )
