@@ -42,7 +42,7 @@ export function Playlist(props) {
       <div id="playlistWrapper" className={className}>
         <form onSubmit={(event) => moveToDifferentPlaylist(event, setPlaylistName)} className="form-control">
           <div className="flex space-x-2">
-            <input type="text" placeholder={playlistName} className="w-full input input-primary" />
+            <input type="text" placeholder={playlistName} className="w-full input placeholder-primary-content" />
             <button className="btn btn-secondary">Reload</button>
           </div>
         </form>
@@ -60,7 +60,10 @@ export function Playlist(props) {
 
       let previousContentId =  playlistData.length > 0?playlistData[index - 1].id:null
       let followingContentId = playlistData.length > 0?playlistData[index].id:null
-      let personaId =personas[user.currentPersona].id
+      let personaId = null;
+      if (personas != null) { 
+         let personaId =personas[user.currentPersona].id
+      }
       let recomm = getRecommData({ variables: getRecommVariables(personaId,playlistName, playlistData, position, previousContentId, followingContentId) })
       setFocusPosition(position);
       setViewMode("recomm");

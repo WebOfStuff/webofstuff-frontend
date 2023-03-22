@@ -120,7 +120,7 @@ export const createNewPersona = async ( user, setUser, personaName, personas, se
       currentPlaylist: personaName,
       theme: {
         connect: {
-          themeName: chooseRandomTheme()
+          themeName: "Welcome"
         }
       },
       // maybe should be current Theme instead?

@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client"
-import { ifError } from "assert"
 
 let prisma
 

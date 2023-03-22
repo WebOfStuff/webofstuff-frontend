@@ -47,29 +47,47 @@ export default function ThemeBuilder() {
 
       for (const color in colors) {
         let colorAspects = colors[color]
-        classNameCard = "card w-full max-w-xs "
+        classNameCard = ""
      
         for (const colorAspect in colorAspects) {
           let camelCaseAspect = makeCamelCase(colorAspect)
-          let n_match = ntc.name(theme[camelCaseAspect])
-         
+          let n_match, hslColor, hslFlipped;
+          if (theme[camelCaseAspect]){
+          n_match = ntc.name(theme[camelCaseAspect])
           let hexColor = theme[camelCaseAspect]
-          let hslColor = hexToHSL(hexColor)
-          let hslFlipped = flipHSL(hslColor)
+           hslColor = hexToHSL(hexColor)
+           hslFlipped = flipHSL(hslColor)
+          } else {
+             hslColor = "0, 100%, 100%"
+             hslFlipped = "0, 100%, 0%"
+             n_match=["Not Set","Not Set"]
+          }
+         
           let styleValue = {
             input: {
               "backgroundColor": "hsl(" + hslColor  + ")",
               "color": "hsl(" + hslFlipped + ")"
             }
           }
-    
+
+          switch (colorAspect) {
+          case colorAspect.match(/color/)?.input:
+            let toSet = colorAspect.slice(0, -6);
+            classNameCard += " bg-"+toSet
+            break;
+          case colorAspect.match(/content/)?.input:
+            classNameCard += " text-"+colorAspect
+            break;
+          }
+
           let key = colorAspect+" "+JSON.stringify(n_match[1])
           textBoxclassName = "input input-bordered w-full max-w-xs"
           result.push(<InputField key={key} id={colorAspect} type="text"
-            label={colorAspect} value={n_match[1]} focusFunction={onFocus} focusParameterSet={colorAspect} className={textBoxclassName} styleValue={styleValue}>
+            label={colorAspect} value={n_match[1]} focusFunction={onFocus} focusParameterSet={colorAspect} className={textBoxclassName} styleValue={styleValue} readOnly="readOnly">
 
           </InputField>)
         }
+        classNamesCard.push(classNameCard)
         collectResults.push(result)
         result = []
       }
@@ -86,14 +104,14 @@ export default function ThemeBuilder() {
           <div className="card-body">
             <h2 className="card-title">
               <InputField key="themeName" id="themeName" type="text"
-                label="Theme" value={theme.name} className="input input-bordered w-full max-w-xs"> //TODO: Add language support?
+                label="Theme" value={theme.themeName.toUpperCase()} className="input input-bordered w-full max-w-xs text-transform: uppercase"> //TODO: Add language support?
               </InputField>
             </h2>
             <form id="colorsToSet">
               <div className="grid grid-cols-3 grid-flow-row">
                 {aspectInputs.map(function (result, x) {
                   let a = colors[result[0].key]
-                  let classNameCard = "card card-side bg-base-100 shadow-xl " //+ classNamesCard[x]
+                  let classNameCard = "card card-bordered shadow-xl"+classNamesCard[x]
                   return (
                     <div key={x} className={classNameCard}>
                       <div className="card-body" > {result} </div>

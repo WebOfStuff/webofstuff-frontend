@@ -3,8 +3,9 @@ import { useLayoutEffect, useState } from "react";
 import { useTheme, icons } from "../Themes/ThemeContext";
 import { shapes } from "./Shapes";
 
-export default function Icon(props) {
-  const { id, className, circle, shape, shapeStrokeClass, circleFillClass, shapeFillClass } = props;
+
+export default function Button(props) {
+  const { id, className, shapeStrokeClass, circleFillClass, shapeFillClass, textClass, shape, text  } = props;
   const {theme, setTheme} = useTheme()
   const fullClassName = className + " inline-block overflow-visible h-[5vh] w-[5vh] z-20 relative"
   const [curve, setCurve] = useState(shapes[shape]);
@@ -46,4 +47,3 @@ export default function Icon(props) {
     </>
   )
 }
-
