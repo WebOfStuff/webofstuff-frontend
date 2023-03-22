@@ -22,7 +22,8 @@ model Account {
   session_state      String?
   oauth_token_secret String?
   oauth_token        String?
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user               User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@unique([provider, providerAccountId])
 }
 
@@ -35,16 +36,18 @@ model Session {
 }
 
 model User {
-  id             String         @id @unique @default(uuid())
-  userName           String?
-  visibleName    String?        @unique
-  email          String         @unique
-  emailVerified  DateTime?
-  image          String?
-  currentPersona Int?
-  userPersonas   UserPersonas[]
-  accounts       Account[]
-  sessions       Session[]
+  id              String         @id @unique @default(uuid())
+  name        String?
+  visibleName     String?        @unique
+  email           String         @unique
+  emailVerified   DateTime?
+  image           String?
+  currentPersona  Int?
+  userPersonas    UserPersonas[]
+  accounts        Account[]
+  sessions        Session[]
+  userFavThemes   Theme[]        @relation(name: "userFavThemes")
+  userOwnedThemes Theme[]        @relation(name: "userOwnedThemes")
 }
 
 model UserPersonas {
@@ -59,30 +62,32 @@ model UserPersonas {
 
 model Persona {
   id              String         @id @unique @default(uuid())
-  personaName     String    
+  personaName     String
   image           String?
   currentPlaylist String
-  themeId       String
+  themeId         String
   theme           Theme          @relation(fields: [themeId], references: [id])
   users           UserPersonas[]
-  ownerUserId         String
+  ownerUserId     String
 }
 
 model Theme {
-  id              String         @id @unique @default(uuid())
-  themeName             String    @unique
-  ownerUserId          String
+  id               String    @id @unique @default(uuid())
+  themeName        String    @unique
+  ownerUser        User      @relation(name: "userOwnedThemes", fields: [ownerUserId], references: [id])
+  ownerUserId      String
+  favUserIds       User[]    @relation("userFavThemes")
   personas         Persona[]
   //Primary Colors
-  primaryColor     String @default("#a991f7")
-  primaryFocus     String? 
-  primaryContent   String? 
+  primaryColor     String    @default("#a991f7")
+  primaryFocus     String?
+  primaryContent   String?
   //Secondary Colors
-  secondaryColor   String @default("#f6d860")
-  secondaryFocus   String? 
-  secondaryContent String? 
+  secondaryColor   String    @default("#f6d860")
+  secondaryFocus   String?
+  secondaryContent String?
   //Accent Colors
-  accentColor      String @default("#37cdbe")
+  accentColor      String    @default("#37cdbe")
   accentFocus      String?
   accentContent    String?
   //System Colors
@@ -99,6 +104,7 @@ model Theme {
   warningContent   String?
   errorColor       String?
   errorContent     String?
+  emoji            String?   @default("questionMark")
 }
 
 model VerificationToken {
