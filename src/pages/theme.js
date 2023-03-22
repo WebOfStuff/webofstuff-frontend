@@ -111,7 +111,7 @@ export default function ThemeBuilder() {
               <div className="grid grid-cols-3 grid-flow-row">
                 {aspectInputs.map(function (result, x) {
                   let a = colors[result[0].key]
-                  let classNameCard = "card card-bordered shadow-xl"+classNamesCard[x]
+                  let classNameCard = "card card-bordered border-neutral-focus shadow-xl"+classNamesCard[x]
                   return (
                     <div key={x} className={classNameCard}>
                       <div className="card-body" > {result} </div>
