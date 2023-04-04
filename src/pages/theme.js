@@ -10,20 +10,23 @@ import { usePersonas } from '../components/Personas/PersonaContext';
 import { hexToHSL, flipHSL } from '../components/Base/Colors/Colors';
 import { useSession } from 'next-auth/react';
 import { hydrateUserDataFunction } from '../components/User/UserChanger';
+import { v4 } from "uuid";
 
 
 export default function ThemeBuilder() {
-  const { data: session , status } = useSession();
+  const { data: session, status } = useSession();
   const { user, setUser } = useUser();
   const { personas, setPersonas } = usePersonas();
-  const { theme, setTheme, themeChanges, setThemeChanges} = useTheme();
+  const { theme, setTheme, themeChanges, setThemeChanges } = useTheme();
   const [aspectFocused, setAspectFocused] = useState("")
   const [aspectInputs, setAspectInputs] = useState([]);
+  const [colorPickerPosition, setColorPickerPosition] = useState([0, 0]);
   const [colorHex, setColorHex] = useState("#AAAAAA");
   const colors = ColorsDaisyUI();
   const colorsUnstructured = ColorsDaisyUIUnstructured();
   const [classNamesCard, setClassNamesCard] = useState([]);
   const [themeToEdit, setThemeToEdit] = useState("");
+
 
   const hydrateUserData = useCallback(async () => {
     hydrateUserDataFunction(session, setUser, setPersonas, setTheme)
@@ -48,39 +51,37 @@ export default function ThemeBuilder() {
       for (const color in colors) {
         let colorAspects = colors[color]
         classNameCard = ""
-     
+
         for (const colorAspect in colorAspects) {
           let camelCaseAspect = makeCamelCase(colorAspect)
           let n_match, hslColor, hslFlipped;
-          if (theme[camelCaseAspect]){
-          n_match = ntc.name(theme[camelCaseAspect])
-          let hexColor = theme[camelCaseAspect]
-           hslColor = hexToHSL(hexColor)
-           hslFlipped = flipHSL(hslColor)
+          if (theme[camelCaseAspect]) {
+            n_match = ntc.name(theme[camelCaseAspect])
+            let hexColor = theme[camelCaseAspect]
+            hslColor = hexToHSL(hexColor)
+            hslFlipped = flipHSL(hslColor)
           } else {
-             hslColor = "0, 100%, 100%"
-             hslFlipped = "0, 100%, 0%"
-             n_match=["Not Set","Not Set"]
+            hslColor = "0, 100%, 100%"
+            hslFlipped = "0, 100%, 0%"
+            n_match = ["Not Set", "Not Set"]
           }
-         
+
           let styleValue = {
-            input: {
-              "backgroundColor": "hsl(" + hslColor  + ")",
-              "color": "hsl(" + hslFlipped + ")"
-            }
+            "backgroundColor": "hsl(" + hslColor + ")",
+            "color": "hsl(" + hslFlipped + ")"
           }
 
           switch (colorAspect) {
-          case colorAspect.match(/color/)?.input:
-            let toSet = colorAspect.slice(0, -6);
-            classNameCard += " bg-"+toSet
-            break;
-          case colorAspect.match(/content/)?.input:
-            classNameCard += " text-"+colorAspect
-            break;
+            case colorAspect.match(/color/)?.input:
+              let toSet = colorAspect.slice(0, -6);
+              classNameCard += " bg-" + toSet
+              break;
+            case colorAspect.match(/content/)?.input:
+              classNameCard += " text-" + colorAspect
+              break;
           }
 
-          let key = colorAspect+" "+JSON.stringify(n_match[1])
+          let key = colorAspect + " " + JSON.stringify(n_match[1])
           textBoxclassName = "input input-bordered w-full max-w-xs"
           result.push(<InputField key={key} id={colorAspect} type="text"
             label={colorAspect} value={n_match[1]} focusFunction={onFocus} focusParameterSet={colorAspect} className={textBoxclassName} styleValue={styleValue} readOnly="readOnly">
@@ -97,24 +98,24 @@ export default function ThemeBuilder() {
   }, [colors, personas, theme, classNamesCard, themeChanges, themeToEdit, setThemeChanges, setClassNamesCard, setAspectInputs]);
 
   if (theme) {
+    let bla = 1;
     return (
       <>
-
-        <div className="card card-side bg-base-100 shadow-xl">
-          <div className="card-body">
-            <h2 className="card-title">
+        <div className="card card-bordered bg-base-100 shadow-xl h-full overflow-scroll">
+          <div className="card-body h-full ">
+            <h2 className="card-title h-1/6">
               <InputField key="themeName" id="themeName" type="text"
-                label="Theme" value={theme.themeName.toUpperCase()} className="input input-bordered w-full max-w-xs text-transform: uppercase"> //TODO: Add language support?
+                label="Theme" value={themeToEdit.toUpperCase()} className="input input-bordered w-full max-w-xs text-transform: uppercase"> //TODO: Add language support?
               </InputField>
             </h2>
-            <form id="colorsToSet">
-              <div className="grid grid-cols-3 grid-flow-row">
+            <form className="h-5/6" id="colorsToSet">
+              <div className="flex flex-wrap">
                 {aspectInputs.map(function (result, x) {
                   let a = colors[result[0].key]
-                  let classNameCard = "card card-bordered border-neutral-focus shadow-xl"+classNamesCard[x]
+                  let classNameCard = "card card-bordered min-w-[350px] flex-grow shadow-xl " + classNamesCard[x]
                   return (
                     <div key={x} className={classNameCard}>
-                      <div className="card-body" > {result} </div>
+                      <div className="card-body " > {result} </div>
                     </div>
                   )
                 })}
@@ -122,44 +123,62 @@ export default function ThemeBuilder() {
             </form>
           </div>
 
-          <ColorPicker aspect={aspectFocused} color={colorHex} onColorChange={onColorChange}></ColorPicker>
+          <ColorPicker position={colorPickerPosition} aspect={aspectFocused} color={colorHex} onColorChange={onColorChange} themeName={document.getElementById("themeName")?.value.toUpperCase()} ></ColorPicker>
         </div>
       </>
     )
   } else { return <></> }
 
-  async function onColorChange(color, aspectFocused) {
+  async function onColorChange(color, aspectFocused, themeName) {
     if (theme && aspectFocused) {
       let n_match = ntc.name(color.hexString)
       let colorHsl = hexToHSL(n_match[0])
+      let where = { "themeName": themeName }
+      let create = JSON.parse(JSON.stringify(theme));
+      let update = JSON.parse(JSON.stringify(theme));
 
-      let colorUpdate = {}
-      colorUpdate[makeCamelCase(aspectFocused)] = n_match[0]
-      let newtheme = theme
-      newtheme[makeCamelCase(aspectFocused)] = n_match[0]
-      setTheme(newtheme)
-
-      let themeCreate = {
-        themeName: theme.name + " Copy",
-        ownerUserId: user.userId
+      let uuid = v4()
+      create.id = uuid;
+      create[makeCamelCase(aspectFocused)] = n_match[0]
+      create.themeName = themeName;
+      create.ownerUserId = user.id
+      create["favUserIds"] = { connect: { id: user.id } }
+      create["personas"] = {
+        connect: {
+          id: personas[user.currentPersona].personaId
+        }
       }
-      themeCreate[makeCamelCase(aspectFocused)] = n_match[0]
+
+      delete update.id
+      update[makeCamelCase(aspectFocused)] = n_match[0]
+      setTheme(update)
+
+      let body = {
+        where: where,
+        create: create,
+        update: update
+      }
 
       try {
-        const themeUpdate = await fetch('/api/theme/update?id=' + theme.id, {
+        const themeUpdate = await fetch('/api/theme/upsert', {
           method: "POST",
-          body: JSON.stringify(colorUpdate)
+          body: JSON.stringify(body)
+        }).then(response => {
+          return response.text()
+        }).then(text => {
+          return text
         })
       } catch (error) {
         console.log(error);
       }
-     
-      //document.documentElement.style.setProperty(colorsUnstructured[aspectFocused], colorHsl);
+
       setThemeChanges(true)
     }
   };
 
   function onFocus(e, aspect) {
+    setColorPickerPosition([e.target.getBoundingClientRect().left, e.target.getBoundingClientRect().top + e.target.scrollHeight])
+    setColorHex(theme[makeCamelCase(aspect)])
     setAspectFocused(aspect)
   };
 
@@ -168,16 +187,4 @@ export default function ThemeBuilder() {
     let hsl = color.hsl.h + " " + color.hsl.s + "% " + color.hsl.l + "%"
     return hsl
   }
-
-
-
-
 }
-
-   /* 
-        for (const colorAspect in colorAspects) {
-          aspectToSet = pickAspectToSet(colorAspect)
-          classNameCard += aspectToSet + "-" + colorAspect + " "
-        }
-
-        setClassNamesCard(prev => [...prev, classNameCard]) */

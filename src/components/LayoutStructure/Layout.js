@@ -19,7 +19,7 @@ export default function Layout({ children,
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
       <TopMenu />
-      <div id="contentarea" className="h-[90vh] flex flex-row w-full">
+      <div id="contentarea" className="h-[92.5vh] flex flex-row w-full">
         <div id="leftmenu" className="w-[10vw]">
           <LeftMenu />
         </div>

@@ -1,4 +1,3 @@
-import { waitForDebugger } from "inspector";
 
 export default async function handlePrismaCreate(objectName, req, res) {
   let body

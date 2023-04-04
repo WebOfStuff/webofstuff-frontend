@@ -12,9 +12,9 @@ export function InputField(props) {
 
   return (
 
-    <div className="form-control">
+    <div className="form-control h-full w-full">
       <label htmlFor={id}>{label}</label>
-      <input id={id} type={type} className={className} defaultValue={value} onFocus={handleFocus} style={styleValue?.input} readOnly={readOnly}/>
+      <input id={id} type={type} className={className} defaultValue={value} onFocus={handleFocus} style={styleValue} readOnly={readOnly}/>
     </div>
   )
 }
