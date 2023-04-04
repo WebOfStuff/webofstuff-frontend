@@ -3,7 +3,7 @@ import iro from '@jaames/iro';
 import { useState } from 'react';
 
 export default function ColorPicker(props) {
-  const  {color, onColorChange, aspect, position, themeName} = props;
+  const  {color, onColorChange, aspect, position, themeName, visible} = props;
   let colorPicker = useRef(false)
 let loading = useRef(true)
 const [colorPickerStyle, setColorPickerStyle] = useState({});
@@ -31,9 +31,10 @@ useEffect(() => {
 useEffect(() => {
   setColorPickerStyle({
     "left":""+position[0]+"px",
-    "top": ""+position[1]+"px"
+    "top": ""+position[1]+"px",
+    "visibility": "" +visible
 })
-},[position[0],position[1], setColorPickerStyle])
+},[position[0],position[1], setColorPickerStyle, visible])
 
 useEffect(() => { 
   if (!loading.current) {

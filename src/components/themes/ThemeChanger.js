@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "./ThemeContext";
 import { usePersonas } from "../Personas/PersonaContext";
 import { useUser } from "../User/UserContext";
@@ -12,6 +12,7 @@ export default function ThemeChanger(props) {
   const { user, setUser } = useUser()
   const { theme, setTheme } = useTheme();
   const { personas, setPersonas } = usePersonas();
+  const [themeList, setThemeList] = useState([]);
 
   useEffect(() => {
     if (Array.isArray(personas) && personas.length && theme && personas[user?.currentPersona]?.persona?.theme?.themeName != theme.themeName) {
@@ -22,23 +23,27 @@ export default function ThemeChanger(props) {
     }
   }, [user, personas, setTheme, theme]);
 
-  let themesList = []
+  
   useEffect(() => {
     let themes = user?.userFavThemes
     if (themes) {
-      themesList = themes.map((themeInList, index) => {
+      setThemeList(themes.map((themeInList, index) => {
         let className = ""
-        if (themeInList == theme.themeName) {
+        if (themeInList.themeName == theme.themeName) {
           className = "active";
         }
         return (
-          <li key={themeInList} >
-            <a className={className} tabIndex="0" onClick={(e) => { setThemeInDB(user, personas, themeInList, setPersonas, setTheme, applyTheme) }}>{emojis[themeInList.emoji]} {themeInList}</a>
+          <li key={themeInList.themeName} >
+            <a className={className} tabIndex="0" 
+            onClick={(e) => { setThemeInDB(user, personas, themeInList.themeName, setPersonas, setTheme, applyTheme) }} 
+            onMouseEnter={() => applyTheme(themeInList)}  
+            onMouseLeave={() => applyTheme(theme)} 
+            >{emojis[themeInList.emoji]} {themeInList.themeName}</a>
           </li>
         )
-      });
+      }))
     }
-  }, [user]);
+  }, [user,theme,personas,setPersonas, setTheme]);
 
 
 
@@ -60,7 +65,7 @@ export default function ThemeChanger(props) {
               </path></svg></div>
           <div className="mt-[6vh] overflow-y-auto shadow-2xl top-px dropdown-content h-auto w-52 rounded-b-box bg-base-100 text-base-content">
             <ul className="p-4 menu compact">
-              {themesList}
+              {themeList}
             </ul>
           </div>
         </div>

@@ -20,6 +20,7 @@ export default function ThemeBuilder() {
   const { theme, setTheme, themeChanges, setThemeChanges } = useTheme();
   const [aspectFocused, setAspectFocused] = useState("")
   const [aspectInputs, setAspectInputs] = useState([]);
+  const [showColorPicker, setShowColorPicker] = useState("hidden");
   const [colorPickerPosition, setColorPickerPosition] = useState([0, 0]);
   const [colorHex, setColorHex] = useState("#AAAAAA");
   const colors = ColorsDaisyUI();
@@ -84,7 +85,7 @@ export default function ThemeBuilder() {
           let key = colorAspect + " " + JSON.stringify(n_match[1])
           textBoxclassName = "input input-bordered w-full max-w-xs"
           result.push(<InputField key={key} id={colorAspect} type="text"
-            label={colorAspect} value={n_match[1]} focusFunction={onFocus} focusParameterSet={colorAspect} className={textBoxclassName} styleValue={styleValue} readOnly="readOnly">
+            label={colorAspect} value={n_match[1]} focusFunction={onFocus} blurFunction={onBlur} focusParameterSet={colorAspect} className={textBoxclassName} styleValue={styleValue} readOnly="readOnly">
 
           </InputField>)
         }
@@ -98,7 +99,6 @@ export default function ThemeBuilder() {
   }, [colors, personas, theme, classNamesCard, themeChanges, themeToEdit, setThemeChanges, setClassNamesCard, setAspectInputs]);
 
   if (theme) {
-    let bla = 1;
     return (
       <>
         <div className="card card-bordered bg-base-100 shadow-xl h-full overflow-scroll">
@@ -123,7 +123,7 @@ export default function ThemeBuilder() {
             </form>
           </div>
 
-          <ColorPicker position={colorPickerPosition} aspect={aspectFocused} color={colorHex} onColorChange={onColorChange} themeName={document.getElementById("themeName")?.value.toUpperCase()} ></ColorPicker>
+          <ColorPicker visible={showColorPicker} position={colorPickerPosition} aspect={aspectFocused} color={colorHex} onColorChange={onColorChange} themeName={document.getElementById("themeName")?.value.toUpperCase()} ></ColorPicker>
         </div>
       </>
     )
@@ -177,10 +177,16 @@ export default function ThemeBuilder() {
   };
 
   function onFocus(e, aspect) {
+    setShowColorPicker("visible")
     setColorPickerPosition([e.target.getBoundingClientRect().left, e.target.getBoundingClientRect().top + e.target.scrollHeight])
     setColorHex(theme[makeCamelCase(aspect)])
     setAspectFocused(aspect)
   };
+
+  function onBlur(e) {
+    setShowColorPicker("hidden")
+  };
+
 
 
   function generateHSLString(color) {

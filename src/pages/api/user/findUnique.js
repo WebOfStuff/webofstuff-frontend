@@ -18,6 +18,7 @@ export default async function handle(req, res) {
       email: email,
     },
     include: {
+      userFavThemes: true,
       userPersonas: {
         include: {
           persona: {
