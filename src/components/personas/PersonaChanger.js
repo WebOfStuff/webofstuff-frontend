@@ -23,7 +23,7 @@ export default function PersonaChanger(props) {
      let personaName = "Main"+ user.id
       createNewPersona( user, setUser, personaName, personas, setPersonas)
     }
-  }, [user, personas])
+  }, [user, personas,firstPersonaCreated, setFirstPersonaCreated,setPersonas,setUser])
 
   //Create the persona dropdown if personas were loaded 
   useEffect(() => {

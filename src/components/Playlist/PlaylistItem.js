@@ -39,7 +39,7 @@ export function PlaylistItem(props) {
 
   return (
     <>
-      <li id="PlaylistItem" className={buildItemclassname(playlistItemData, playlistPosition)} position={playlistPosition}
+      <li id="PlaylistItem" className={buildItemclassname(playlistItemData, playlistPosition)} value={playlistPosition}
         onTouchStart={(event) => switchPlaylistItem_(event)}
         onClick={(event) => switchPlaylistItem_(event)}
         onKeyDown={() => handleKeyDown_()}>

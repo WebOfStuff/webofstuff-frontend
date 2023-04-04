@@ -17,7 +17,7 @@ useEffect(() => {
     });
   }
   loading.current = false
-},[colorPicker, onColorChange, aspect])
+},[colorPicker, onColorChange, aspect,themeName])
 
 useEffect(() => {
   if (!loading.current) {
@@ -26,7 +26,7 @@ useEffect(() => {
       onColorChange(color,aspect,themeName)
     });
   }
-},[colorPicker, onColorChange, aspect])
+},[colorPicker, onColorChange, aspect, themeName])
 
 useEffect(() => {
   setColorPickerStyle({
@@ -34,7 +34,7 @@ useEffect(() => {
     "top": ""+position[1]+"px",
     "visibility": "" +visible
 })
-},[position[0],position[1], setColorPickerStyle, visible])
+},[position, setColorPickerStyle, visible])
 
 useEffect(() => { 
   if (!loading.current) {

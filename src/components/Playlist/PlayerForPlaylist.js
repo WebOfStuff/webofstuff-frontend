@@ -40,7 +40,7 @@ export default function PlayerForPlaylist(props) {
       player = videojs.getPlayer(playerName)
       player.playlist(playlistData, index);
     }
-  }, [gotPlayer, playlistData, position, playerName, positionPlaying]);
+  }, [gotPlayer, playlistData, position, playerName, positionPlaying, videoEl, props]);
 
 
   return (

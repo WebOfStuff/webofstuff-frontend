@@ -18,8 +18,8 @@ export default function Table(props) {
   //data = shuffle(data[dataType])
   
 
-  let listItems = data.filter((row) => row.shownRow = true).slice(0, 5).map((row) =>
-      <TableRow fields={fields} row={row} clickFunctions={clickFunctions} clickParameterSets= {clickParameterSets} dataType={dataType} />
+  let listItems = data.filter((row, index) => row.shownRow = true).slice(0, 5).map((row, index) =>
+      <TableRow key={index} fields={fields} row={row} clickFunctions={clickFunctions} clickParameterSets= {clickParameterSets} dataType={dataType} />
   );
 
 

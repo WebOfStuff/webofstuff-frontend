@@ -28,6 +28,16 @@ export default function ThemeBuilder() {
   const [classNamesCard, setClassNamesCard] = useState([]);
   const [themeToEdit, setThemeToEdit] = useState("");
 
+  const onFocus = useCallback((e, aspect) => {
+    setShowColorPicker("visible")
+    setColorPickerPosition([e.target.getBoundingClientRect().left, e.target.getBoundingClientRect().top + e.target.scrollHeight])
+    setColorHex(theme[makeCamelCase(aspect)])
+    setAspectFocused(aspect)
+  },[setShowColorPicker,setColorPickerPosition,setColorHex,setAspectFocused, theme]) 
+
+  const onBlur =  useCallback((e) => {
+    setShowColorPicker("hidden")
+  },[setShowColorPicker])
 
   const hydrateUserData = useCallback(async () => {
     hydrateUserDataFunction(session, setUser, setPersonas, setTheme)
@@ -96,7 +106,7 @@ export default function ThemeBuilder() {
       setAspectInputs(collectResults)
       setThemeChanges(false)
     }
-  }, [colors, personas, theme, classNamesCard, themeChanges, themeToEdit, setThemeChanges, setClassNamesCard, setAspectInputs]);
+  }, [colors, personas, theme, classNamesCard, themeChanges, themeToEdit, setThemeChanges, setClassNamesCard, setAspectInputs, onFocus, onBlur]);
 
   if (theme) {
     return (
@@ -105,7 +115,7 @@ export default function ThemeBuilder() {
           <div className="card-body h-full ">
             <h2 className="card-title h-1/6">
               <InputField key="themeName" id="themeName" type="text"
-                label="Theme" value={themeToEdit.toUpperCase()} className="input input-bordered w-full max-w-xs text-transform: uppercase"> //TODO: Add language support?
+                label="Theme" value={themeToEdit.toUpperCase()} className="input input-bordered w-full max-w-xs text-transform: uppercase"> {/*TODO: Add language support?*/}
               </InputField>
             </h2>
             <form className="h-5/6" id="colorsToSet">
@@ -174,17 +184,6 @@ export default function ThemeBuilder() {
 
       setThemeChanges(true)
     }
-  };
-
-  function onFocus(e, aspect) {
-    setShowColorPicker("visible")
-    setColorPickerPosition([e.target.getBoundingClientRect().left, e.target.getBoundingClientRect().top + e.target.scrollHeight])
-    setColorHex(theme[makeCamelCase(aspect)])
-    setAspectFocused(aspect)
-  };
-
-  function onBlur(e) {
-    setShowColorPicker("hidden")
   };
 
 

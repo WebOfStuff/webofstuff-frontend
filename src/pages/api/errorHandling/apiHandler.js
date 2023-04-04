@@ -1,4 +1,4 @@
-import { errorHandler } from 'helpers/api';
+import { errorHandler } from './errorHandler';
 
 export { apiHandler };
 
