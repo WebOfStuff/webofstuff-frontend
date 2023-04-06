@@ -35,9 +35,9 @@
     "react-dom": "^18.2.0",
     "subscriptions-transport-ws": "^0.11.0",
     "uuid": "^8.3.2",
-    "video.js": "^7.18.1",
-    "videojs-playlist": "^4.3.1",
-    "videojs-youtube": "^2.6.1"
+    "video.js": "latest",
+    "videojs-playlist": "^5.0.1",
+    "videojs-youtube": "latest"
   },
   "name": "webofstuff-frontend",
   "description": "WebofStuff Frontend",

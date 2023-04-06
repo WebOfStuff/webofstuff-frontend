@@ -1,7 +1,7 @@
 import React from 'react';
 import videojs from 'video.js';
 import 'videojs-youtube';
-import 'videojs-playlist';
+import plugin from 'videojs-playlist';
 import { useEffect, useState, useCallback } from 'react';
 import { usePlaylistValues } from './PlaylistContext';
 
@@ -38,7 +38,8 @@ export default function PlayerForPlaylist(props) {
       let player = videojs(videoEl, props)
       let index = positionPlaying - 1
       player = videojs.getPlayer(playerName)
-      player.playlist(playlistData, index);
+      videojs.registerPlugin("playlist",plugin)
+      player?.playlist(playlistData, index);
     }
   }, [gotPlayer, playlistData, position, playerName, positionPlaying, videoEl, props]);
 
